@@ -1,0 +1,4 @@
+*.subject.pdf
+*.o
+build/
+ft_nm
