@@ -1,4 +1,10 @@
-*.subject.pdf
-*.o
-build/
 ft_nm
+*.o
+*.d
+*.a
+*.so
+*.subject.pdf
+.cache/
+.vscode/
+build/
+compile_commands.json

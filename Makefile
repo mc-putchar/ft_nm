@@ -3,6 +3,7 @@ NAME := ft_nm
 SRCDIR := src
 OBJDIR := build
 INCDIR := include
+LIBDIR := lib
 
 SRC :=
 vpath %.c $(SRCDIR)
@@ -14,11 +15,15 @@ OBJ := $(addprefix $(OBJDIR)/, $(OBJ))
 DEPS := $(OBJ:.o=.d)
 -include $(DEPS)
 
+LIBFTDIR := $(LIBDIR)/libft
+LIBFT := $(LIBFTDIR)/libft.a
+LIBFT_INC := $(LIBFTDIR)/include
+
 CC := cc
 CFLAGS := -Wall -Wextra -Werror -pedantic -Wconversion -Wunreachable-code -Wshadow
-CPPFLAGS := -I$(INCDIR) -MD -MP
-LDFLAGS :=
-LDLIBS :=
+CPPFLAGS := -I$(INCDIR) -I$(LIBFT_INC) -MD -MP
+LDFLAGS := -L$(LIBFTDIR)
+LDLIBS := -lft
 
 debug: DEBUG := 1
 ifeq ($(DEBUG), 1)
@@ -42,7 +47,7 @@ NC  := \033[0m
 
 all: $(NAME) # Compile all targets
 
-$(NAME): $(OBJ)
+$(NAME): $(LIBFT) $(OBJ)
 	$(CC) $(OBJ) -o $@ $(LDFLAGS) $(LDLIBS)
 
 $(OBJDIR)/%.o: %.c | $(OBJDIR)
@@ -51,15 +56,21 @@ $(OBJDIR)/%.o: %.c | $(OBJDIR)
 $(OBJDIR):
 	$(MKDIR) $@
 
+$(LIBFT):
+	$(MAKE) -C $(LIBFTDIR)
+
 clean: # Clean intermediary files
 	$(RM) $(OBJ)
 	$(RM) -r $(OBJDIR)
+	$(MAKE) -C $(LIBFTDIR) $(MAKECMDGOALS)
 
 fclean: clean # Clean all compiled files
 	$(RM) $(NAME)
+	$(MAKE) -C $(LIBFTDIR) $(MAKECMDGOALS)
 
 re: fclean # Recompile all
 	@$(MAKE) all
+	$(MAKE) -C $(LIBFTDIR) $(MAKECMDGOALS)
 
 debug: re
 
