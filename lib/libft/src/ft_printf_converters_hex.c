@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 20:40:10 by mcutura           #+#    #+#             */
-/*   Updated: 2025/07/06 21:36:28 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/07/07 00:46:40 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ char	*to_hex_str(size_t n, int offset, int prefix, int prec)
 
 	digits = count_digits(n);
 	len = digits + ((n && prefix) * 2);
-	if (prec > digits)
+	if (n && prec > digits)
 		len += (prec - digits);
 	if (safe_alloc(&hex, len + 1))
 		return (NULL);
