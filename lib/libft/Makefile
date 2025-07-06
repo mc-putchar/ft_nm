@@ -6,7 +6,7 @@
 #    By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/02 12:21:15 by mcutura           #+#    #+#              #
-#    Updated: 2025/07/06 14:25:48 by mcutura          ###   ########.fr        #
+#    Updated: 2025/07/06 22:50:08 by mcutura          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,7 @@ I/O := $(addprefix $(BINDIR)/, ft_putchar_fd.o ft_putstr_fd.o ft_putendl_fd.o \
 	ft_putnbr_fd.o)
 LST := $(addprefix $(BINDIR)/, ft_lstadd_front.o ft_lstadd_back.o \
 	ft_lstdelone.o ft_lstclear.o ft_lstnew.o ft_lstsize.o ft_lstiter.o \
-	ft_lstlast.o ft_lstmap.o)
+	ft_lstlast.o ft_lstmap.o ft_lstindex.o)
 GNL := $(BINDIR)/get_next_line.o
 PRNTF := $(addprefix $(BINDIR)/, ft_printf.o ft_printf_utils.o \
 	ft_printf_converters.o ft_printf_converters_hex.o ft_printf_flags.o)
@@ -53,6 +53,7 @@ CPPFLAGS := -I$(INCDIR)
 debug: DEBUG := 1
 ifeq ($(DEBUG), 1)
 	CFLAGS += -ggdb3 -Og
+	CPPFLAGS += -DDEBUG=1
 endif
 
 AR := ar
@@ -94,7 +95,7 @@ clean:
 
 fclean: clean
 	$(RM) $(NAME)
-	$(MAKE) -C $(TESTDIR) $(MAKECMDGOALS)
+	$(MAKE) -C $(TESTDIR) fclean
 
 re: fclean
 	$(MAKE) all
@@ -103,4 +104,4 @@ debug:
 	DEBUG=1 $(MAKE) re
 
 test: $(NAME)
-	$(MAKE) -C $(TESTDIR) $(MAKECMDGOALS)
+	$(MAKE) -C $(TESTDIR) test

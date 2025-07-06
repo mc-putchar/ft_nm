@@ -6,13 +6,14 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/14 15:22:28 by mcutura           #+#    #+#             */
-/*   Updated: 2024/03/14 15:22:28 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/07/06 22:49:35 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LIBFT_LST_H
 # define LIBFT_LST_H
 
+# include <stddef.h>
 typedef struct s_list
 {
 	void			*content;
@@ -28,5 +29,6 @@ void	ft_lstdelone(t_list *lst, void (*del)(void *));
 void	ft_lstclear(t_list **lst, void (*del)(void *));
 void	ft_lstiter(t_list *lst, void (*f)(void *));
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
+t_list	*ft_lstindex(t_list *lst, size_t index);
 
 #endif //LIBFT_LST_H

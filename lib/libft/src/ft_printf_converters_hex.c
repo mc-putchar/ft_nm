@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 20:40:10 by mcutura           #+#    #+#             */
-/*   Updated: 2025/07/06 02:32:45 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/07/06 21:36:28 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "ft_printf.h"
 #include "libft.h"
 
-static char	*to_hex_str(unsigned long long n, int offset, int prefix, int prec);
+static char	*to_hex_str(size_t n, int offset, int prefix, int prec);
 
 char	*hex_con(t_format *fmt)
 {
@@ -54,7 +54,7 @@ char	*ptr_con(t_format *fmt)
 		fmt->len = 5;
 		return (ft_strdup("(nil)"));
 	}
-	tmp = to_hex_str((unsigned long long)fmt->u_arg.p, HEX_OFFSET_LOWER, 1, \
+	tmp = to_hex_str((size_t)fmt->u_arg.p, HEX_OFFSET_LOWER, 1, \
 		fmt->precision);
 	if (!tmp)
 		return (NULL);
@@ -62,7 +62,7 @@ char	*ptr_con(t_format *fmt)
 	return (tmp);
 }
 
-static int	count_digits(unsigned long long n)
+static int	count_digits(size_t n)
 {
 	int	d;
 
@@ -77,23 +77,25 @@ static int	count_digits(unsigned long long n)
 	return (d);
 }
 
-char	*to_hex_str(unsigned long long n, int offset, int prefix, int prec)
+char	*to_hex_str(size_t n, int offset, int prefix, int prec)
 {
 	char	*hex;
 	int		digits;
 	size_t	len;
 
 	digits = count_digits(n);
-	len = digits + ((n != 0) * (prefix != 0) * 2);
+	len = digits + ((n && prefix) * 2);
 	if (prec > digits)
 		len += (prec - digits);
 	if (safe_alloc(&hex, len + 1))
 		return (NULL);
 	if (!n || prefix)
 		hex[0] = '0';
-	hex[len] = 0;
 	if (n && prefix)
 		hex[1] = 'Q' + offset;
+	hex[len] = 0;
+	if (!len)
+		return (hex);
 	while ((int)len-- > ((prefix != 0) * 2))
 	{
 		hex[len] = (n & 0xF) + '0';
