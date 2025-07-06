@@ -8,6 +8,7 @@ LIBDIR := lib
 SRC :=
 vpath %.c $(SRCDIR)
 SRC += main.c
+SRC += print_info.c
 
 OBJ := $(SRC:.c=.o)
 OBJ := $(addprefix $(OBJDIR)/, $(OBJ))
@@ -43,7 +44,8 @@ CYA := \033[36m
 CYB := \033[1;36m
 NC  := \033[0m
 
-.PHONY: all debug clean fclean re help
+.PHONY: all debug clean fclean re run help
+.DEFAULT_GOAL := all
 
 all: $(NAME) # Compile all targets
 
@@ -71,6 +73,9 @@ fclean: clean # Clean all compiled files
 re: fclean # Recompile all
 	@$(MAKE) all
 	$(MAKE) -C $(LIBFTDIR) $(MAKECMDGOALS)
+
+run: $(NAME) # Run the compiled program
+	@./$(NAME) $(filter-out run,$(MAKECMDGOALS))
 
 debug: re
 

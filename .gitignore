@@ -3,6 +3,7 @@ ft_nm
 *.d
 *.a
 *.so
+*.log
 *.subject.pdf
 .cache/
 .vscode/
