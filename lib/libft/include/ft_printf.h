@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 20:35:15 by mcutura           #+#    #+#             */
-/*   Updated: 2025/07/06 02:34:38 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/07/06 14:31:11 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,5 +70,8 @@ int		apply_flags(t_format *fmt);
 int		ft_printf(const char *format, ...);
 int		ft_dprintf(int fd, const char *format, ...);
 int		ft_vprintf(int fd, const char *format, va_list ap);
+
+int		throw_error(int err, char const *msg);
+void	print_error(char const *msg);
 
 #endif // FT_PRINTF_H

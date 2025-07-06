@@ -6,7 +6,7 @@
 #    By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/02 12:21:15 by mcutura           #+#    #+#              #
-#    Updated: 2025/07/06 13:49:08 by mcutura          ###   ########.fr        #
+#    Updated: 2025/07/06 14:25:48 by mcutura          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -61,6 +61,7 @@ MKDIR := mkdir -p
 RM := rm -f
 
 .PHONY: all clean fclean re debug test
+.DEFAULT_GOAL := all
 
 all: $(NAME)
 
