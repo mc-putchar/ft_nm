@@ -1,0 +1,11 @@
+ft_nm
+*.o
+*.d
+*.a
+*.so
+*.log
+*.subject.pdf
+.cache/
+.vscode/
+build/
+compile_commands.json

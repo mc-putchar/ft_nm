@@ -9,6 +9,7 @@ SRC :=
 vpath %.c $(SRCDIR)
 SRC += main.c
 SRC += print_info.c
+SRC += parse_elf.c
 
 OBJ := $(SRC:.c=.o)
 OBJ := $(addprefix $(OBJDIR)/, $(OBJ))
@@ -29,8 +30,8 @@ LDLIBS := -lft
 debug: DEBUG := 1
 ifeq ($(DEBUG), 1)
 	CFLAGS += -ggdb3 -Og
-	CPPFLAGS += -DDEBUG
-	LDFLAGS += -ggdb3 -Og
+	CPPFLAGS += -DDEBUG=1
+	LDFLAGS += -ggdb3 -Og -DDEBUG=1
 endif
 
 MKDIR := mkdir -p
@@ -44,7 +45,7 @@ CYA := \033[36m
 CYB := \033[1;36m
 NC  := \033[0m
 
-.PHONY: all debug clean fclean re run help
+.PHONY: all debug clean fclean re run try help
 .DEFAULT_GOAL := all
 
 all: $(NAME) # Compile all targets
@@ -72,15 +73,23 @@ fclean: clean # Clean all compiled files
 
 re: fclean # Recompile all
 	@$(MAKE) all
-	$(MAKE) -C $(LIBFTDIR) $(MAKECMDGOALS)
 
 run: $(NAME) # Run the compiled program
 	@./$(NAME) $(filter-out run,$(MAKECMDGOALS))
+
+try: $(NAME) # Run the program with Valgrind
+	@valgrind --show-leak-kinds=all --track-origins=yes ./$(NAME) $(filter-out try,$(MAKECMDGOALS))
 
 debug: re
 
 help:	# Show this helpful message
 	@awk 'BEGIN { FS = ":.*#"; \
-	printf "$(GRN)$(NAME)$(NC)\nby: $(AUTHORS)\t@$(GRN)42 Berlin$(NC)\n\n"; \
+	printf "$(GRN)$(NAME)$(NC)\n"; \
 	printf "Usage:\n\t$(CYB)make $(MAG)<target>$(NC)\n" } \
 	/^[A-Za-z_0-9-]+:.*?#/ { printf "$(MAB)%-16s $(CYA)%s$(NC)\n", $$1, $$2}' Makefile
+
+container: # Build a Docker container for the project
+	@docker build -t $(NAME) .
+
+exec: container # Run the Docker container
+	@docker run --rm -it $(NAME) /bin/sh -c 'make -C /app re; make run $(filter-out exec,$(MAKECMDGOALS))'

@@ -6,7 +6,7 @@
 #    By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/02 12:21:15 by mcutura           #+#    #+#              #
-#    Updated: 2025/07/06 22:50:08 by mcutura          ###   ########.fr        #
+#    Updated: 2025/07/07 01:22:26 by mcutura          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,7 +47,7 @@ PRNTFH := ft_printf.h
 
 CC := cc
 CFLAGS := -Wall -Wextra -Werror -pedantic -std=c99
-CFLAGS += -march=native -O2
+CFLAGS += -march=native -O2 -fPIC
 CPPFLAGS := -I$(INCDIR)
 
 debug: DEBUG := 1
