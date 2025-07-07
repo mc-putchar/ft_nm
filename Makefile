@@ -8,8 +8,11 @@ LIBDIR := lib
 SRC :=
 vpath %.c $(SRCDIR)
 SRC += main.c
-SRC += print_info.c
 SRC += parse_elf.c
+SRC += print_info.c
+SRC += print_sections.c
+SRC += print_strings.c
+SRC += print_symbols.c
 
 OBJ := $(SRC:.c=.o)
 OBJ := $(addprefix $(OBJDIR)/, $(OBJ))
