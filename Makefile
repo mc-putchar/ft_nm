@@ -8,7 +8,9 @@ LIBDIR := lib
 SRC :=
 vpath %.c $(SRCDIR)
 SRC += main.c
-SRC += parse_elf.c
+SRC += read_elf.c
+SRC += read_section.c
+SRC += read_sheader.c
 SRC += print_info.c
 SRC += print_sections.c
 SRC += print_strings.c
@@ -36,9 +38,12 @@ ifeq ($(DEBUG), 1)
 	CPPFLAGS += -DDEBUG=1
 	LDFLAGS += -ggdb3 -Og -DDEBUG=1
 endif
+SAMPLE := sample.c
 
 MKDIR := mkdir -p
 RM := rm -f
+
+PLATFORM := linux/amd64
 
 RED := \033[31m
 GRN := \033[32m
@@ -48,7 +53,7 @@ CYA := \033[36m
 CYB := \033[1;36m
 NC  := \033[0m
 
-.PHONY: all debug clean fclean re run try help
+.PHONY: all debug clean fclean re run try help sample container exec shell
 .DEFAULT_GOAL := all
 
 all: $(NAME) # Compile all targets
@@ -68,16 +73,16 @@ $(LIBFT):
 clean: # Clean intermediary files
 	$(RM) $(OBJ)
 	$(RM) -r $(OBJDIR)
-	$(MAKE) -C $(LIBFTDIR) $(MAKECMDGOALS)
+	$(MAKE) -C $(LIBFTDIR) clean
 
 fclean: clean # Clean all compiled files
 	$(RM) $(NAME)
-	$(MAKE) -C $(LIBFTDIR) $(MAKECMDGOALS)
+	$(MAKE) -C $(LIBFTDIR) fclean
 
 re: fclean # Recompile all
 	@$(MAKE) all
 
-run: $(NAME) # Run the compiled program
+run: $(NAME) $(SAMPLE) # Run the compiled program
 	@./$(NAME) $(filter-out run,$(MAKECMDGOALS))
 
 try: $(NAME) # Run the program with Valgrind
@@ -91,8 +96,16 @@ help:	# Show this helpful message
 	printf "Usage:\n\t$(CYB)make $(MAG)<target>$(NC)\n" } \
 	/^[A-Za-z_0-9-]+:.*?#/ { printf "$(MAB)%-16s $(CYA)%s$(NC)\n", $$1, $$2}' Makefile
 
-container: # Build a Docker container for the project
-	@docker build -t $(NAME) .
+example: $(SAMPLE)
 
-exec: container # Run the Docker container
-	@docker run --rm -it $(NAME) /bin/sh -c 'make -C /app re; make run $(filter-out exec,$(MAKECMDGOALS))'
+$(SAMPLE):
+	$(CC) sample.c
+
+container: # Build a Docker container for the project
+	@docker build --platform $(PLATFORM) -t $(NAME) .
+
+exec: container # Exec in the Docker container
+	@docker run --rm --platform $(PLATFORM) -it $(NAME) /bin/sh -c 'make run $(filter-out exec,$(MAKECMDGOALS))'
+
+shell: container # Run shell in the Docker container
+	@docker run --rm --platform $(PLATFORM) -it $(NAME) /bin/sh

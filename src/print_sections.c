@@ -73,12 +73,12 @@ void	print_section_headers(t_elf *elf)
 		shdr = (Elf64_Shdr *)seek_elf(elf, ehdr->e_shoff + i * ehdr->e_shentsize, ehdr->e_shentsize);
 		if (!shdr)
 			return ;
-		if (DEBUG && shdr->sh_type == SHT_SYMTAB)
+		if (DEBUG && (shdr->sh_type == SHT_SYMTAB || shdr->sh_type == SHT_STRTAB))
 			print_sec_header(shdr, shstrtab, shstrtab_size);
 		if (DEBUG && shdr->sh_type == SHT_STRTAB && shdr->sh_size > 0)
 			print_strtab(shdr->sh_offset, shdr->sh_size, elf);
 		if (shdr->sh_type == SHT_SYMTAB && shstrtab)
-			print_symbols(elf, shdr, shstrtab, shstrtab_size);
+			print_symbols(elf, shdr);
 		++i;
 	}
 }

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse_elf.c                                        :+:      :+:    :+:   */
+/*   read_elf.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 19:38:04 by mcutura           #+#    #+#             */
-/*   Updated: 2025/07/07 02:38:21 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/07/08 21:12:10 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,12 +77,14 @@ int	load_file_to_mem(t_elf *elf)
 		return (throw_error(-1, ERR_BAD_ELF));
 	}
 	if (DEBUG)
+	{
 		print_program_headers(elf);
-	print_section_headers(elf);
+		print_section_headers(elf);
+	}
 	return (0);
 }
 
-int	get_file_info(char *file, t_elf *elf)
+int	load_file(char *file, t_elf *elf)
 {
 	int const	fd = open(file, O_RDONLY);
 	struct stat	statbuf;
@@ -110,7 +112,9 @@ int	names(char *file)
 	elf = (t_elf){0};
 	if (!file || !*file)
 		file = DEFAULT_TARGET;
-	if (get_file_info(file, &elf))
+	if (load_file(file, &elf))
 		return (-1);
+	(void)read_section_headers(&elf);
+	munmap(elf.u_dat.addr, elf.size);
 	return (0);
 }
