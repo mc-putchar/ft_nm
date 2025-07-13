@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/14 15:22:28 by mcutura           #+#    #+#             */
-/*   Updated: 2024/03/14 15:22:28 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/07/13 16:17:59 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,5 +30,6 @@ char	**ft_split(const char *s, char c);
 char	**ft_splits(const char *s, const char *sep);
 char	*ft_strmapi(const char *s, char (*f)(unsigned int, char));
 void	ft_striteri(char *s, void (*f)(unsigned int, char *));
+int		ft_strncasecmp(const char *s1, const char *s2, size_t n);
 
 #endif //LIBFT_STR_H

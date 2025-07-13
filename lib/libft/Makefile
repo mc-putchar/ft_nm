@@ -6,7 +6,7 @@
 #    By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/02 12:21:15 by mcutura           #+#    #+#              #
-#    Updated: 2025/07/07 01:22:26 by mcutura          ###   ########.fr        #
+#    Updated: 2025/07/13 16:32:15 by mcutura          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,7 @@ MEM := $(addprefix $(BINDIR)/, ft_bzero.o ft_calloc.o ft_memchr.o ft_memrchr.o \
 STR := $(addprefix $(BINDIR)/, ft_strchr.o ft_strdup.o ft_strjoin.o \
 	ft_strlcat.o ft_strlcpy.o ft_strlen.o ft_strncmp.o ft_strnstr.o \
 	ft_strrchr.o ft_strtrim.o ft_substr.o ft_strmapi.o ft_striteri.o \
-	ft_split.o ft_splits.o)
+	ft_split.o ft_splits.o ft_strncasecmp.o)
 I/O := $(addprefix $(BINDIR)/, ft_putchar_fd.o ft_putstr_fd.o ft_putendl_fd.o \
 	ft_putnbr_fd.o)
 LST := $(addprefix $(BINDIR)/, ft_lstadd_front.o ft_lstadd_back.o \
