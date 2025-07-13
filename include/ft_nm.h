@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 14:14:27 by mcutura           #+#    #+#             */
-/*   Updated: 2025/07/12 23:29:33 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/07/13 18:31:43 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # endif
 
 # define DEFAULT_TARGET	"a.out"
+# define ERR_UNKOWN_OPT	"Error: Unknown option '%s'\n"
 # define ERR_FILE_OPEN	"Error: Cannot open file '%s'\n"
 # define ERR_MMAP		"Error: Failed mapping file to memory\n"
 # define ERR_ELF_HEADER	"Error: Not a valid ELF file\n"
@@ -38,6 +39,17 @@
 
 # define ELF_HEADER_FMT	"  %-8s %02x %02x %02x %02x %02x %02x %02x %02x %02x \
 %02x %02x %02x %02x %02x %02x %02x\n"
+
+# define OPT_DBG_SYMS	0x01
+# define OPT_EXTERNALS	0x02
+# define OPT_UNDEFINED	0x04
+# define OPT_REVERSE	0x08
+# define OPT_NO_SORT	0x10
+
+# define SYM_IS_DBG		0x01
+# define SYM_IS_EXT		0x02
+# define SYM_IS_UNDEF	0x04
+# define SYM_IS_RDONLY	0x08
 
 typedef struct s_elf
 {
@@ -63,9 +75,10 @@ typedef struct	s_section
 typedef struct	s_symbol
 {
 	Elf64_Sym const	*entry;
-	size_t			value;
 	char			*name;
+	size_t			value;
 	unsigned char	type;
+	unsigned char	flags;
 }	t_symbol;
 
 struct	s_symbol_count

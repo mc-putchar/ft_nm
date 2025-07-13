@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 19:38:04 by mcutura           #+#    #+#             */
-/*   Updated: 2025/07/12 23:30:39 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/07/13 14:37:12 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,13 +122,15 @@ int	names(char *file, uint32_t opts)
 		return (throw_error(-1, ERR_MALLOC));
 	read_section_headers(&elf, sections, &sym_count);
 	symtab = malloc(sym_count.symtab * sizeof(t_symbol));
-	dynsym = malloc(sym_count.dynsym * sizeof(t_symbol));
-	if (!symtab || !dynsym)
+	if (!symtab)
 		return (free(sections), throw_error(-1, ERR_MALLOC));
+	dynsym = malloc(sym_count.dynsym * sizeof(t_symbol));
+	if (!dynsym)
+		return (free(symtab), free(sections), throw_error(-1, ERR_MALLOC));
 	load_all_symbols(&elf, sections, symtab, dynsym);
 	print_symbols(symtab, dynsym, &sym_count, opts);
-	free(symtab);
 	free(dynsym);
+	free(symtab);
 	free(sections);
 	munmap(elf.u_dat.addr, elf.size);
 	return (0);

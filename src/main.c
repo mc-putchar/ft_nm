@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/09 17:37:36 by mcutura           #+#    #+#             */
-/*   Updated: 2025/07/12 23:25:39 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/07/13 17:12:05 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,59 @@
 #include <stdint.h>
 #include <unistd.h>
 #include "ft_nm.h"
+#include "ft_printf.h"
+
+int	parse_options(int ac, char **av, uint32_t *opts)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	while (++i < ac && av[i][0] == '-')
+	{
+		j = 0;
+		while (av[i][++j])
+		{
+			if (av[i][j] == 'a')
+				*opts |= OPT_DBG_SYMS;
+			else if (av[i][j] == 'g')
+				*opts |= OPT_EXTERNALS;
+			else if (av[i][j] == 'u')
+				*opts |= OPT_UNDEFINED;
+			else if (av[i][j] == 'r')
+				*opts |= OPT_REVERSE;
+			else if (av[i][j] == 'p')
+				*opts |= OPT_NO_SORT;
+			else
+				return (ft_dprintf(STDERR_FILENO, ERR_UNKOWN_OPT, av[i]), -1);
+		}
+	}
+	return (0);
+}
 
 int	main(int ac, char **av)
 {
 	int			err;
+	int			i;
+	int			proc;
 	uint32_t	opts;
 
 	opts = 0;
-	if (ac < 2)
-		err = names(DEFAULT_TARGET, opts);
-	else
-		err = names(av[1], opts);
+	if (parse_options(ac, av, &opts))
+		return (1);
+	err = 0;
+	proc = 0;
+	i = 0;
+	while (++i < ac)
+	{
+		if (av[i][0] == '-')
+			continue ;
+		if (DEBUG)
+			ft_printf("Processing file: %s\n", av[i]);
+		if (++proc && names(av[i], opts))
+			err = 1;
+	}
+	if (!proc && names(DEFAULT_TARGET, opts))
+		return (1);
 	return (err);
 }
