@@ -11,10 +11,11 @@ SRC += main.c
 SRC += read_elf.c
 SRC += read_section.c
 SRC += read_sheader.c
+SRC += load_symbols.c
+SRC += print_symbols.c
 SRC += print_info.c
 SRC += print_sections.c
 SRC += print_strings.c
-SRC += print_symbols.c
 
 OBJ := $(SRC:.c=.o)
 OBJ := $(addprefix $(OBJDIR)/, $(OBJ))
@@ -109,3 +110,6 @@ exec: container # Exec in the Docker container
 
 shell: container # Run shell in the Docker container
 	@docker run --rm --platform $(PLATFORM) -it $(NAME) /bin/sh
+
+test:
+	diff -s <(./ft_nm) <(nm -ap a.out)

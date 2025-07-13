@@ -6,13 +6,14 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 19:38:04 by mcutura           #+#    #+#             */
-/*   Updated: 2025/07/08 21:12:10 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/07/12 23:30:39 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <elf.h>
 #include <fcntl.h>
 #include <stddef.h>
+#include <stdlib.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -64,11 +65,11 @@ int	validate_header(t_elf *elf)
 	return (throw_error(-1, ERR_BAD_ELF));
 }
 
-int	load_file_to_mem(t_elf *elf)
+int	load_file_to_mem(t_elf *elf, int fd)
 {
-	if (!elf || elf->fd < 0 || elf->size < sizeof(Elf64_Ehdr))
+	if (!elf || elf->size < sizeof(Elf64_Ehdr))
 		return (throw_error(-1, ERR_BAD_ELF));
-	elf->u_dat.addr = mmap(NULL, elf->size, PROT_READ, MAP_PRIVATE, elf->fd, 0);
+	elf->u_dat.addr = mmap(NULL, elf->size, PROT_READ, MAP_PRIVATE, fd, 0);
 	if (elf->u_dat.addr == MAP_FAILED)
 		return (throw_error(-1, ERR_MMAP));
 	if (validate_header(elf))
@@ -94,27 +95,41 @@ int	load_file(char *file, t_elf *elf)
 	statbuf = (struct stat){0};
 	elf->filename = file;
 	if (fstat(fd, &statbuf))
-		return (close(fd), -1);
+		return (close(fd), throw_error(-1, ERR_FSTAT));
 	elf->size = (size_t)statbuf.st_size;
-	elf->fd = fd;
 	if (DEBUG)
 		print_file_info(file, &statbuf);
-	if (load_file_to_mem(elf))
+	if (load_file_to_mem(elf, fd))
 		return (close(fd), -1);
 	(void)close(fd);
 	return (0);
 }
 
-int	names(char *file)
+int	names(char *file, uint32_t opts)
 {
-	t_elf	elf;
+	t_elf					elf;
+	t_section				*sections;
+	t_symbol				*symtab;
+	t_symbol				*dynsym;
+	struct s_symbol_count	sym_count;
 
 	elf = (t_elf){0};
-	if (!file || !*file)
-		file = DEFAULT_TARGET;
+	sym_count = (struct s_symbol_count){0};
 	if (load_file(file, &elf))
 		return (-1);
-	(void)read_section_headers(&elf);
+	sections = malloc(elf.u_dat.ehdr->e_shnum * sizeof(t_section));
+	if (!sections)
+		return (throw_error(-1, ERR_MALLOC));
+	read_section_headers(&elf, sections, &sym_count);
+	symtab = malloc(sym_count.symtab * sizeof(t_symbol));
+	dynsym = malloc(sym_count.dynsym * sizeof(t_symbol));
+	if (!symtab || !dynsym)
+		return (free(sections), throw_error(-1, ERR_MALLOC));
+	load_all_symbols(&elf, sections, symtab, dynsym);
+	print_symbols(symtab, dynsym, &sym_count, opts);
+	free(symtab);
+	free(dynsym);
+	free(sections);
 	munmap(elf.u_dat.addr, elf.size);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 01:39:36 by mcutura           #+#    #+#             */
-/*   Updated: 2025/07/07 03:01:19 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/07/11 09:49:16 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,8 +77,8 @@ void	print_section_headers(t_elf *elf)
 			print_sec_header(shdr, shstrtab, shstrtab_size);
 		if (DEBUG && shdr->sh_type == SHT_STRTAB && shdr->sh_size > 0)
 			print_strtab(shdr->sh_offset, shdr->sh_size, elf);
-		if (shdr->sh_type == SHT_SYMTAB && shstrtab)
-			print_symbols(elf, shdr);
+		// if (shdr->sh_type == SHT_SYMTAB && shstrtab)
+		// 	print_symbols(elf, shdr);
 		++i;
 	}
 }
