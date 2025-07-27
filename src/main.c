@@ -22,10 +22,10 @@ int	parse_options(int ac, char **av, uint32_t *opts)
 	int	j;
 
 	i = 0;
-	while (++i < ac && av[i][0] == '-')
+	while (++i < ac)
 	{
 		j = 0;
-		while (av[i][++j])
+		while (av[i][0] == '-' && av[i][++j])
 		{
 			if (av[i][j] == 'a')
 				*opts |= OPT_DBG_SYMS;
