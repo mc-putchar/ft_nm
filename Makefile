@@ -109,7 +109,7 @@ exec: container # Exec in the Docker container
 	@docker run --rm --platform $(PLATFORM) -it $(NAME) /bin/sh -c 'make run $(filter-out exec,$(MAKECMDGOALS))'
 
 shell: container # Run shell in the Docker container
-	@docker run --rm --platform $(PLATFORM) -it $(NAME) /bin/sh
+	@docker run --rm --mount type=bind,src=${PWD},dst=/app --platform $(PLATFORM) -it $(NAME) /bin/sh
 
 test:
 	diff -s <(./ft_nm) <(nm -ap a.out)
