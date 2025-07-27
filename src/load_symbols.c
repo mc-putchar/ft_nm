@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 01:55:42 by mcutura           #+#    #+#             */
-/*   Updated: 2025/07/13 18:52:11 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/07/27 17:30:44 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,17 +18,9 @@
 #include "ft_printf.h"
 #include "libft_str.h"
 
-unsigned char	get_symbol_info(t_elf *elf, Elf64_Sym const *sym)
+unsigned char	get_well_known(Elf64_Sym const *sym, unsigned char is_local, \
+	unsigned char bind, unsigned char info)
 {
-	unsigned char const	info = ELF64_ST_TYPE(sym->st_info);
-	unsigned char const	bind = ELF64_ST_BIND(sym->st_info);
-	unsigned char		is_local;
-	uint32_t			type;
-	char				*sec_name;
-
-	is_local = 0;
-	if (bind == STB_LOCAL)
-		is_local = 32;
 	if (bind == STB_WEAK)
 	{
 		if (info == STT_OBJECT)
@@ -37,12 +29,27 @@ unsigned char	get_symbol_info(t_elf *elf, Elf64_Sym const *sym)
 	}
 	if (bind == STB_GNU_UNIQUE)
 		return ('u');
-	if (sym->st_shndx == SHN_UNDEF)
-		return ('U');
 	if (sym->st_shndx == SHN_ABS)
-		return ('a');
+		return ('A' + is_local);
 	if (sym->st_shndx == SHN_COMMON)
 		return ('C');
+	if (sym->st_shndx == SHN_UNDEF)
+		return ('U');
+	return (0);
+}
+
+unsigned char	get_symbol_info(t_elf *elf, Elf64_Sym const *sym)
+{
+	unsigned char const	bind = ELF64_ST_BIND(sym->st_info);
+	unsigned char		is_local;
+	unsigned char		info;
+	uint32_t			type;
+	char				*sec_name;
+
+	is_local = (bind == STB_LOCAL) * 32;
+	info = get_well_known(sym, is_local, bind, ELF64_ST_TYPE(sym->st_info));
+	if (info)
+		return (info);
 	type = get_section_type(elf, sym->st_shndx);
 	sec_name = get_section_name(elf, sym->st_shndx);
 	if (!ft_strncmp(sec_name, ".text", 5))
@@ -61,8 +68,9 @@ unsigned char	get_symbol_info(t_elf *elf, Elf64_Sym const *sym)
 		return ('B' + is_local);
 	if (type == STT_GNU_IFUNC)
 		return ('I' + is_local);
-	else
-		return '?';
+	ft_dprintf(2, "DEBUG: Unknown symbol type '%d' for section '%s'\n",
+		type, sec_name);
+	return '?';
 }
 
 Elf64_Sym	*get_symbol_table(t_elf *elf, Elf64_Shdr *shdr)

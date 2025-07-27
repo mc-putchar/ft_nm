@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 09:30:21 by mcutura           #+#    #+#             */
-/*   Updated: 2025/07/13 18:59:18 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/07/27 16:14:16 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,8 @@ void	print_symbols(t_symbol *symtab, t_symbol *dynsym, \
 			{
 				if (symtab[i].flags & SYM_IS_UNDEF)
 					ft_printf("% 18c", symtab[i].type);
+				else if (opts & OPT_UNDEFINED && ++i)
+					continue ;
 				else
 					ft_printf("%016x %c", symtab[i].value, symtab[i].type);
 				if (symtab[i].name)

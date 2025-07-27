@@ -111,8 +111,8 @@ void	print_elf_header64(Elf64_Ehdr *ehdr)
 	ft_printf("  %-34s %#X (%s)\n", "Machine:", ehdr->e_machine, machine_str(ehdr->e_machine));
 	ft_printf("  %-34s %d\n", "Version:", ehdr->e_version);
 	ft_printf("  %-34s %#.8x\n", "Entry point address:", ehdr->e_entry);
-	printf("  %-34s %ld (bytes into file)\n", "Start of program headers:", ehdr->e_phoff);
-	printf("  %-34s %ld (bytes into file)\n", "Start of section headers:", ehdr->e_shoff);
+	// printf("  %-34s %ld (bytes into file)\n", "Start of program headers:", ehdr->e_phoff);
+	// printf("  %-34s %ld (bytes into file)\n", "Start of section headers:", ehdr->e_shoff);
 	ft_printf("  %-34s %#x\n", "Flags:", ehdr->e_flags);
 	ft_printf("  %-34s %d (bytes)\n", "Size of this header:", ehdr->e_ehsize);
 	ft_printf("  %-34s %d (bytes)\n", "Size of program headers:", ehdr->e_phentsize);

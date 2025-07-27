@@ -45,6 +45,7 @@ MKDIR := mkdir -p
 RM := rm -f
 
 PLATFORM := linux/amd64
+SHELL := /bin/bash
 
 RED := \033[31m
 GRN := \033[32m
@@ -111,5 +112,9 @@ exec: container # Exec in the Docker container
 shell: container # Run shell in the Docker container
 	@docker run --rm --mount type=bind,src=${PWD},dst=/app --platform $(PLATFORM) -it $(NAME) /bin/sh
 
-test:
-	diff -s <(./ft_nm) <(nm -ap a.out)
+test: TARGET := $(filter-out test, $(MAKECMDGOALS))
+test:	# Run tests against the compiled program
+	@echo -e "$(GRN)Running tests for $(TARGET)$(NC)"
+	(LANG=C diff -ys --color <(./ft_nm $(FLAGS) $(TARGET)) <(nm $(FLAGS) $(TARGET)) \
+	&& echo -e "$(GRN)Test passed for $(TARGET)$(NC)") \
+	|| echo -e "$(RED)Test failed for $(TARGET)$(NC)"
