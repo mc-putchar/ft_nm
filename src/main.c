@@ -6,49 +6,15 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/09 17:37:36 by mcutura           #+#    #+#             */
-/*   Updated: 2025/07/13 17:12:05 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/08/03 18:32:51 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stddef.h>
 #include <stdint.h>
 #include <unistd.h>
-#include "libft_str.h"
 #include "ft_nm.h"
 #include "ft_printf.h"
-
-int	parse_options(int ac, char **av, uint32_t *opts, int *flagstop)
-{
-	int	i;
-	int	j;
-
-	i = 0;
-	while (++i < ac)
-	{
-		if (!ft_strncmp(av[i], "--", 3))
-		{
-			*flagstop = i;
-			return (0);
-		}
-		j = 0;
-		while (av[i][0] == '-' && av[i][++j])
-		{
-			if (av[i][j] == 'a')
-				*opts |= OPT_DBG_SYMS;
-			else if (av[i][j] == 'g')
-				*opts |= OPT_EXTERNALS;
-			else if (av[i][j] == 'u')
-				*opts |= OPT_UNDEFINED;
-			else if (av[i][j] == 'r')
-				*opts |= OPT_REVERSE;
-			else if (av[i][j] == 'p')
-				*opts |= OPT_NO_SORT;
-			else
-				return (ft_dprintf(STDERR_FILENO, ERR_UNKOWN_OPT, av[i]), -1);
-		}
-	}
-	return (0);
-}
 
 int	main(int ac, char **av)
 {

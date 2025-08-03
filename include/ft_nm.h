@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 14:14:27 by mcutura           #+#    #+#             */
-/*   Updated: 2025/07/13 18:31:43 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/08/03 18:33:14 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ void		print_program_headers(t_elf *elf);
 void		print_section_headers(t_elf *elf);
 void		print_strtab(size_t offset, size_t size, t_elf *elf);
 
+int			parse_options(int ac, char **av, uint32_t *opts, int *flagstop);
 int			names(char *file, uint32_t opts);
 void		*seek_elf(t_elf *elf, size_t off, size_t len);
 void		read_section_headers(t_elf *elf, t_section *sections, struct s_symbol_count *symcount);
