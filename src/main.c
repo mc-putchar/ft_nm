@@ -13,10 +13,11 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <unistd.h>
+#include "libft_str.h"
 #include "ft_nm.h"
 #include "ft_printf.h"
 
-int	parse_options(int ac, char **av, uint32_t *opts)
+int	parse_options(int ac, char **av, uint32_t *opts, int *flagstop)
 {
 	int	i;
 	int	j;
@@ -24,6 +25,11 @@ int	parse_options(int ac, char **av, uint32_t *opts)
 	i = 0;
 	while (++i < ac)
 	{
+		if (!ft_strncmp(av[i], "--", 3))
+		{
+			*flagstop = i;
+			return (0);
+		}
 		j = 0;
 		while (av[i][0] == '-' && av[i][++j])
 		{
@@ -50,16 +56,18 @@ int	main(int ac, char **av)
 	int			i;
 	int			proc;
 	uint32_t	opts;
+	int			flagstop;
 
 	opts = 0;
-	if (parse_options(ac, av, &opts))
+	flagstop = ac;
+	if (parse_options(ac, av, &opts, &flagstop))
 		return (1);
 	err = 0;
 	proc = 0;
 	i = 0;
 	while (++i < ac)
 	{
-		if (av[i][0] == '-')
+		if (av[i][0] == '-' && i <= flagstop)
 			continue ;
 		if (DEBUG)
 			ft_printf("Processing file: %s\n", av[i]);
