@@ -12,6 +12,7 @@ SRC += read_elf.c
 SRC += read_section.c
 SRC += read_sheader.c
 SRC += load_symbols.c
+SRC += options.c
 SRC += print_symbols.c
 SRC += print_info.c
 SRC += print_sections.c
