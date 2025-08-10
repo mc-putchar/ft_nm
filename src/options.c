@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 18:32:26 by mcutura           #+#    #+#             */
-/*   Updated: 2025/08/10 17:27:21 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/08/10 19:41:25 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ int	parse_input(int ac, char **av, t_input *input)
 	input->opts = 0;
 	input->file_count = 0;
 	input->files = NULL;
-	if (parse_options(ac, av, &input->opts, &input->flagstop)
+	if (parse_options(ac, av, &input->opts, &input->flagstop) \
 	|| parse_files(ac, av, input))
 		return (-1);
 	return (0);

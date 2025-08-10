@@ -39,10 +39,10 @@ List symbols in [file(s)] (a.out by default).
 
 ## Remaining TODOs:
 
-[] Endianness transformations  
-[] ELF32 support  
-[] Improve symbol type assertions  
-[] Exclude symbols from default (no options) print  
-[] Fix sorting  
-[] Testing suite  
-[] Print DYNSYM  
+[ ] Endianness transformations  
+[ ] ELF32 support  
+[ ] Improve symbol type assertions  
+[ ] Exclude symbols from default (no options) print  
+[ ] Fix sorting  
+[ ] Testing suite  
+[ ] Print DYNSYM  

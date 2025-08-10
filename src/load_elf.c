@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   read_elf.c                                         :+:      :+:    :+:   */
+/*   load_elf.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 19:38:04 by mcutura           #+#    #+#             */
-/*   Updated: 2025/08/10 17:12:56 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/08/10 21:50:36 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,6 @@ int	validate_header32(Elf32_Ehdr *ehdr)
 {
 	if (ehdr->e_type == ET_NONE)
 		return (ft_dprintf(STDERR_FILENO, ERR_ELF_TYPE, ehdr->e_type), -1);
-	if (DEBUG)
-		print_elf_header32(ehdr);
 	return (0);
 }
 
@@ -46,8 +44,6 @@ int	validate_header64(Elf64_Ehdr *ehdr)
 {
 	if (ehdr->e_type == ET_NONE)
 		return (ft_dprintf(STDERR_FILENO, ERR_ELF_TYPE, ehdr->e_type), -1);
-	if (DEBUG)
-		print_elf_header64(ehdr);
 	return (0);
 }
 
@@ -59,11 +55,8 @@ int	validate_header(t_elf *elf)
 		return (throw_error(-1, ERR_BAD_ELF));
 	if (elf->u_dat.ehdr->e_ident[EI_VERSION] != EV_CURRENT)
 		return (throw_error(-1, ERR_BAD_ELF));
-	if (DEBUG)
-		print_elf_ident(elf->u_dat.ehdr);
 	if (elf->u_dat.ehdr->e_ident[EI_CLASS] == ELFCLASS32)
 		return (throw_error(-1, ERR_NOT_IMPL));
-		// return (validate_header32(elf->u_dat.ehdr32));
 	else if (elf->u_dat.ehdr->e_ident[EI_CLASS] == ELFCLASS64)
 		return (validate_header64(elf->u_dat.ehdr));
 	return (throw_error(-1, ERR_BAD_ELF));
@@ -81,11 +74,6 @@ int	load_file_to_mem(t_elf *elf, int fd)
 		munmap(elf->u_dat.addr, elf->size);
 		return (throw_error(-1, ERR_BAD_ELF));
 	}
-	if (DEBUG)
-	{
-		print_program_headers(elf);
-		print_section_headers(elf);
-	}
 	return (0);
 }
 
@@ -101,49 +89,10 @@ int	load_file(char *file, t_elf *elf, uint32_t opts)
 	if (fstat(fd, &statbuf))
 		return (close(fd), throw_error(-1, ERR_FSTAT));
 	elf->size = (size_t)statbuf.st_size;
-	if (DEBUG)
-		print_file_info(file, &statbuf);
 	if (load_file_to_mem(elf, fd))
 		return (close(fd), -1);
 	(void)close(fd);
 	if (opts & OPT_FILENAME)
 		ft_printf("\n%s:\n", file);
-	return (0);
-}
-
-static void	cleanup(t_elf *elf, t_section *sections, t_symbol *symtab, t_symbol *dynsym)
-{
-	free(dynsym);
-	free(symtab);
-	free(sections);
-	if (elf)
-		munmap(elf->u_dat.addr, elf->size);
-}
-
-int	names(char *file, uint32_t opts)
-{
-	t_elf					elf;
-	t_section				*sections;
-	t_symbol				*symtab;
-	t_symbol				*dynsym;
-	struct s_symbol_count	sym_count;
-
-	elf = (t_elf){0};
-	sym_count = (struct s_symbol_count){0};
-	if (load_file(file, &elf, opts))
-		return (-1);
-	sections = malloc(elf.u_dat.ehdr->e_shnum * sizeof(t_section));
-	if (!sections)
-		return (cleanup(&elf, NULL, NULL, NULL), throw_error(-1, ERR_MALLOC));
-	read_section_headers(&elf, sections, &sym_count);
-	symtab = malloc(sym_count.symtab * sizeof(t_symbol));
-	if (!symtab)
-		return (cleanup(&elf, sections, NULL, NULL), throw_error(-1, ERR_MALLOC));
-	dynsym = malloc(sym_count.dynsym * sizeof(t_symbol));
-	if (!dynsym)
-		return (cleanup(&elf, sections, symtab, NULL), throw_error(-1, ERR_MALLOC));
-	load_all_symbols(&elf, sections, symtab, dynsym);
-	print_symbols(symtab, dynsym, &sym_count, opts);
-	cleanup(&elf, sections, symtab, dynsym);
 	return (0);
 }

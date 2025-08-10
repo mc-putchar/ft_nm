@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 01:55:42 by mcutura           #+#    #+#             */
-/*   Updated: 2025/07/27 17:30:44 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/08/10 21:51:03 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,12 +70,11 @@ unsigned char	get_symbol_info(t_elf *elf, Elf64_Sym const *sym)
 		return ('I' + is_local);
 	ft_dprintf(2, "DEBUG: Unknown symbol type '%d' for section '%s'\n",
 		type, sec_name);
-	return '?';
+	return ('?');
 }
 
 Elf64_Sym	*get_symbol_table(t_elf *elf, Elf64_Shdr *shdr)
 {
-
 	Elf64_Sym	*symtab;
 
 	symtab = (Elf64_Sym *)seek_elf(elf, shdr->sh_offset, shdr->sh_size);
@@ -144,8 +143,8 @@ size_t	load_symbols(t_elf *elf, Elf64_Shdr *shdr, t_symbol *symbols)
 
 size_t	load_all_symbols(t_elf *elf, t_section *sections, t_symbol *symtab, t_symbol *dynsym)
 {
-	size_t  loaded;
-	size_t  i;
+	size_t	loaded;
+	size_t	i;
 
 	loaded = 0;
 	i = 0;

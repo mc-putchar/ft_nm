@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 14:14:27 by mcutura           #+#    #+#             */
-/*   Updated: 2025/08/10 17:27:18 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/08/10 21:50:16 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,17 +98,11 @@ struct	s_symbol_count
 	size_t	dynsym;
 };
 
-void		print_file_info(char *path, struct stat *st);
-void		print_elf_ident(Elf64_Ehdr *ehdr);
-void		print_elf_header64(Elf64_Ehdr *ehdr);
-void		print_elf_header32(Elf32_Ehdr *ehdr);
-void		print_raw_bytes(void *data, size_t size);
-void		print_program_headers(t_elf *elf);
-void		print_section_headers(t_elf *elf);
-void		print_strtab(size_t offset, size_t size, t_elf *elf);
+typedef size_t	(*t_symbol_loader)(t_elf *elf, void *shdr, t_symbol *symbols);
 
 int			parse_input(int ac, char **av, t_input *input);
 int			names(char *file, uint32_t opts);
+int			load_file(char *file, t_elf *elf, uint32_t opts);
 void		*seek_elf(t_elf *elf, size_t off, size_t len);
 void		read_section_headers(t_elf *elf, t_section *sections, \
 			struct s_symbol_count *symcount);

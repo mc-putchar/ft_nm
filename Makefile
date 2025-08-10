@@ -8,14 +8,13 @@ LIBDIR := lib
 SRC :=
 vpath %.c $(SRCDIR)
 SRC += main.c
-SRC += read_elf.c
+SRC += options.c
+SRC += names.c
+SRC += load_elf.c
 SRC += read_section.c
 SRC += read_sheader.c
 SRC += load_symbols.c
-SRC += options.c
 SRC += print_symbols.c
-SRC += print_info.c
-SRC += print_sections.c
 SRC += print_strings.c
 
 OBJ := $(SRC:.c=.o)
@@ -29,7 +28,8 @@ LIBFT := $(LIBFTDIR)/libft.a
 LIBFT_INC := $(LIBFTDIR)/include
 
 CC := cc
-CFLAGS := -Wall -Wextra -Werror -pedantic -Wconversion -Wunreachable-code -Wshadow
+CFLAGS := -Wall -Wextra -Werror
+CFLAGS += -pedantic -Wconversion -Wunreachable-code -Wshadow
 CPPFLAGS := -I$(INCDIR) -I$(LIBFT_INC) -MD -MP
 LDFLAGS := -L$(LIBFTDIR)
 LDLIBS := -lft
