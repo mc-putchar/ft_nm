@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 19:41:22 by mcutura           #+#    #+#             */
-/*   Updated: 2025/07/12 22:53:13 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/08/10 16:41:42 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,6 @@ void	read_section_headers(t_elf *elf, t_section *sections, struct s_symbol_count
 	Elf64_Ehdr const	*ehdr = elf->u_dat.ehdr;
 	size_t				i;
 
-	if (ehdr->e_shnum == 0)
-	{
-		ft_printf("  No section headers found.\n");
-		return ;
-	}
 	i = 0;
 	while (i < ehdr->e_shnum)
 	{
@@ -67,13 +62,13 @@ void	read_section_headers(t_elf *elf, t_section *sections, struct s_symbol_count
 		if (!sections[i].shdr && ++i)
 			continue ;
 		sections[i].name = get_section_name(elf, i);
-		sections[i].data = get_section(elf, i, &sections[i].size);
 		sections[i].size = sections[i].shdr->sh_size;
 		sections[i].type = sections[i].shdr->sh_type;
 		if (sections[i].type == SHT_SYMTAB)
 			symcount->symtab += sections[i].shdr->sh_size / sizeof(Elf64_Sym);
 		if (sections[i].type == SHT_DYNSYM)
 			symcount->dynsym += sections[i].shdr->sh_size / sizeof(Elf64_Sym);
+		sections[i].data = get_section(elf, i, &sections[i].size);
 		++i;
 	}
 }

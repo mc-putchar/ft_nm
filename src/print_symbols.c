@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 09:30:21 by mcutura           #+#    #+#             */
-/*   Updated: 2025/07/27 16:14:16 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/08/10 17:16:43 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,11 @@ void	print_symbols(t_symbol *symtab, t_symbol *dynsym, \
 {
 	size_t	i;
 
+	if (!count->symtab)
+	{
+		print_error(ERR_NO_SYM);
+		return ;
+	}
 	sort_symbols(symtab, count, opts);
 	i = 0;
 	while (i < count->symtab)

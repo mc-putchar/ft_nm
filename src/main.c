@@ -6,41 +6,47 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/09 17:37:36 by mcutura           #+#    #+#             */
-/*   Updated: 2025/08/03 18:32:51 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/08/10 17:27:55 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stddef.h>
 #include <stdint.h>
 #include <unistd.h>
 #include "ft_nm.h"
 #include "ft_printf.h"
 
+#define USAGE \
+"Usage: %s [option(s)] [file(s)]\n \
+ List symbols in [file(s)] (a.out by default).\n \
+ Options:\n \
+  -a: Display debugger-only symbols.\n \
+  -g: Display only external symbols.\n \
+  -u: Display only undefined symbols.\n \
+  -r: Reverse the sense of the sort.\n \
+  -p: Do not sort the symbols.\n \
+  -h: Display help message.\n"
+
 int	main(int ac, char **av)
 {
-	int			err;
-	int			i;
-	int			proc;
-	uint32_t	opts;
-	int			flagstop;
+	int		err;
+	size_t	done;
+	t_input	input;
 
-	opts = 0;
-	flagstop = ac;
-	if (parse_options(ac, av, &opts, &flagstop))
+	if (parse_input(ac, av, &input))
+		return (1);
+	if (input.opts & OPT_HELP)
+		return (ft_printf(USAGE, av[0]), 0);
+	if (!input.file_count && names(DEFAULT_TARGET, input.opts))
 		return (1);
 	err = 0;
-	proc = 0;
-	i = 0;
-	while (++i < ac)
+	done = 0;
+	if (input.file_count > 1)
+		input.opts |= OPT_FILENAME;
+	while (done < input.file_count)
 	{
-		if (av[i][0] == '-' && i <= flagstop)
-			continue ;
-		if (DEBUG)
-			ft_printf("Processing file: %s\n", av[i]);
-		if (++proc && names(av[i], opts))
-			err = 1;
+		if (names(input.files[done], input.opts))
+			++err;
+		++done;
 	}
-	if (!proc && names(DEFAULT_TARGET, opts))
-		return (1);
 	return (err);
 }

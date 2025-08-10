@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 19:38:04 by mcutura           #+#    #+#             */
-/*   Updated: 2025/07/13 14:37:12 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/08/10 17:12:56 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,11 @@
 void	*seek_elf(t_elf *elf, size_t off, size_t len)
 {
 	if (off + len > elf->size)
-		return (ft_dprintf(STDERR_FILENO, ERR_OOB, off + len, elf->size), NULL);
+	{
+		if (DEBUG)
+			ft_dprintf(STDERR_FILENO, ERR_OOB, off + len, elf->size);
+		return (NULL);
+	}
 	return ((char *)elf->u_dat.addr + off);
 }
 
@@ -85,7 +89,7 @@ int	load_file_to_mem(t_elf *elf, int fd)
 	return (0);
 }
 
-int	load_file(char *file, t_elf *elf)
+int	load_file(char *file, t_elf *elf, uint32_t opts)
 {
 	int const	fd = open(file, O_RDONLY);
 	struct stat	statbuf;
@@ -102,7 +106,18 @@ int	load_file(char *file, t_elf *elf)
 	if (load_file_to_mem(elf, fd))
 		return (close(fd), -1);
 	(void)close(fd);
+	if (opts & OPT_FILENAME)
+		ft_printf("\n%s:\n", file);
 	return (0);
+}
+
+static void	cleanup(t_elf *elf, t_section *sections, t_symbol *symtab, t_symbol *dynsym)
+{
+	free(dynsym);
+	free(symtab);
+	free(sections);
+	if (elf)
+		munmap(elf->u_dat.addr, elf->size);
 }
 
 int	names(char *file, uint32_t opts)
@@ -115,23 +130,20 @@ int	names(char *file, uint32_t opts)
 
 	elf = (t_elf){0};
 	sym_count = (struct s_symbol_count){0};
-	if (load_file(file, &elf))
+	if (load_file(file, &elf, opts))
 		return (-1);
 	sections = malloc(elf.u_dat.ehdr->e_shnum * sizeof(t_section));
 	if (!sections)
-		return (throw_error(-1, ERR_MALLOC));
+		return (cleanup(&elf, NULL, NULL, NULL), throw_error(-1, ERR_MALLOC));
 	read_section_headers(&elf, sections, &sym_count);
 	symtab = malloc(sym_count.symtab * sizeof(t_symbol));
 	if (!symtab)
-		return (free(sections), throw_error(-1, ERR_MALLOC));
+		return (cleanup(&elf, sections, NULL, NULL), throw_error(-1, ERR_MALLOC));
 	dynsym = malloc(sym_count.dynsym * sizeof(t_symbol));
 	if (!dynsym)
-		return (free(symtab), free(sections), throw_error(-1, ERR_MALLOC));
+		return (cleanup(&elf, sections, symtab, NULL), throw_error(-1, ERR_MALLOC));
 	load_all_symbols(&elf, sections, symtab, dynsym);
 	print_symbols(symtab, dynsym, &sym_count, opts);
-	free(dynsym);
-	free(symtab);
-	free(sections);
-	munmap(elf.u_dat.addr, elf.size);
+	cleanup(&elf, sections, symtab, dynsym);
 	return (0);
 }
