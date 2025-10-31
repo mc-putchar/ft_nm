@@ -88,8 +88,8 @@ typedef struct s_symbol
 	Elf64_Sym const	*entry;
 	char			*name;
 	size_t			value;
-	unsigned char	type;
-	unsigned char	flags;
+	uint8_t     	type;
+	uint8_t     	flags;
 }	t_symbol;
 
 struct	s_symbol_count
@@ -111,9 +111,11 @@ char		*get_string_table(t_elf *elf, size_t offset, size_t size, \
 				size_t *len);
 void		*get_section(t_elf *elf, size_t idx, size_t *len);
 uint32_t	get_section_type(t_elf *elf, size_t idx);
+uint64_t    get_section_flags(t_elf *elf, size_t idx);
 char		*get_section_name(t_elf *elf, size_t idx);
 size_t		load_all_symbols(t_elf *elf, t_section *sections, \
 			t_symbol *symtab, t_symbol *dynsym);
+int         get_symbol_type(t_elf *elf, Elf64_Sym const *sym);
 void		print_symbols(t_symbol *symtab, t_symbol *dynsym, \
 			struct s_symbol_count *count, uint32_t opts);
 

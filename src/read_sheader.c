@@ -34,6 +34,15 @@ uint32_t	get_section_type(t_elf *elf, size_t idx)
 	return (shdr->sh_type);
 }
 
+uint64_t    get_section_flags(t_elf *elf, size_t idx)
+{
+    Elf64_Shdr const	*shdr = get_section_header(elf, idx);
+
+    if (!shdr)
+        return (0);
+    return (shdr->sh_flags);
+}
+
 char	*get_section_name(t_elf *elf, size_t idx)
 {
 	Elf64_Shdr const	*shdr = get_section_header(elf, idx);

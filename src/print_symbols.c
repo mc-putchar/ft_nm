@@ -66,6 +66,7 @@ static int	alphacmp(char const *sym1, char const *sym2)
 	return (0);
 }
 
+// TODO: fix reverse sorting bugs
 static void	sort_symbols(t_symbol *symtab, \
 	struct s_symbol_count *count, uint32_t opts)
 {
@@ -84,10 +85,14 @@ static void	sort_symbols(t_symbol *symtab, \
 			diff = (symtab[j].name == NULL) - (symtab[i].name == NULL);
 			if (symtab[i].name && symtab[j].name)
 			{
+			    // TODO: Sorting depends on locale settings,
+				// test and figure out which sorting strategy to use
 				diff = alphacmp(symtab[i].name, symtab[j].name);
-				if (!diff)
-					diff = ft_strncasecmp(symtab[i].name, symtab[j].name, \
+				diff = ft_strncmp(symtab[i].name, symtab[j].name, ft_strlen(symtab[i].name));
+				// if (!diff)
+				/* diff = ft_strncasecmp(symtab[i].name, symtab[j].name, \
 						ft_strlen(symtab[i].name));
+						*/
 			}
 			if ((diff > 0 && !(opts & OPT_REVERSE)) \
 			|| (diff < 0 && opts & OPT_REVERSE))
@@ -96,6 +101,20 @@ static void	sort_symbols(t_symbol *symtab, \
 		}
 		++i;
 	}
+}
+
+static void print_symbol(t_symbol *symbol, uint32_t opts)
+{
+	if (symbol->flags & SYM_IS_UNDEF)
+	    ft_printf("% 18c", symbol->type);
+	else if (opts & OPT_UNDEFINED)
+		return ;
+	else
+		ft_printf("%016x %c", symbol->value, symbol->type);
+	if (symbol->name)
+    	ft_printf(" %s\n", symbol->name);
+	else
+		ft_printf(" \n");
 }
 
 void	print_symbols(t_symbol *symtab, t_symbol *dynsym, \
@@ -112,21 +131,11 @@ void	print_symbols(t_symbol *symtab, t_symbol *dynsym, \
 	i = 0;
 	while (i < count->symtab)
 	{
-		if (!(symtab[i].flags & SYM_IS_DBG) || opts & OPT_DBG_SYMS)
+		if ((!(symtab[i].flags & SYM_IS_DBG) || (opts & OPT_DBG_SYMS)) \
+		&& (!(opts & OPT_EXTERNALS) || symtab[i].flags & SYM_IS_EXT))
 		{
 			if (symtab[i].name || symtab[i].value || symtab[i].type != 'U')
-			{
-				if (symtab[i].flags & SYM_IS_UNDEF)
-					ft_printf("% 18c", symtab[i].type);
-				else if (opts & OPT_UNDEFINED && ++i)
-					continue ;
-				else
-					ft_printf("%016x %c", symtab[i].value, symtab[i].type);
-				if (symtab[i].name)
-					ft_printf(" %s\n", symtab[i].name);
-				else
-					ft_printf(" \n");
-			}
+                print_symbol(&symtab[i], opts);
 		}
 		++i;
 	}

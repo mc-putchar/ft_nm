@@ -8,5 +8,6 @@ a.out
 *.subject.pdf
 .cache/
 .vscode/
+.zed/
 build/
 compile_commands.json

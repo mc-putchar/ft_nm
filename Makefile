@@ -14,6 +14,7 @@ SRC += load_elf.c
 SRC += read_section.c
 SRC += read_sheader.c
 SRC += load_symbols.c
+SRC += get_symbol_type.c
 SRC += print_symbols.c
 SRC += print_strings.c
 
@@ -46,7 +47,7 @@ MKDIR := mkdir -p
 RM := rm -f
 
 PLATFORM := linux/amd64
-SHELL := /bin/bash
+SHELL := /usr/bin/bash
 
 RED := \033[31m
 GRN := \033[32m
@@ -62,7 +63,7 @@ NC  := \033[0m
 all: $(NAME) # Compile all targets
 
 $(NAME): $(LIBFT) $(OBJ)
-	$(CC) $(OBJ) -o $@ $(LDFLAGS) $(LDLIBS)
+	$(CC) -o $@ $(OBJ) $(LDFLAGS) $(LDLIBS)
 
 $(OBJDIR)/%.o: %.c | $(OBJDIR)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
@@ -91,7 +92,8 @@ run: $(NAME) $(SAMPLE) # Run the compiled program
 try: $(NAME) # Run the program with Valgrind
 	@valgrind --show-leak-kinds=all --track-origins=yes ./$(NAME) $(filter-out try,$(MAKECMDGOALS))
 
-debug: re
+debug: fclean
+	@DEBUG=1 $(MAKE) all
 
 help:	# Show this helpful message
 	@awk 'BEGIN { FS = ":.*#"; \
@@ -102,20 +104,21 @@ help:	# Show this helpful message
 example: $(SAMPLE)
 
 $(SAMPLE):
-	$(CC) sample.c
+	$(CC) -ggdb3 sample.c
 
 container: # Build a Docker container for the project
 	@docker build --platform $(PLATFORM) -t $(NAME) .
 
 exec: container # Exec in the Docker container
-	@docker run --rm --platform $(PLATFORM) -it $(NAME) /bin/sh -c 'make run $(filter-out exec,$(MAKECMDGOALS))'
+	@docker run --rm --platform $(PLATFORM) -it $(NAME) /usr/bin/bash -c 'make run $(filter-out exec,$(MAKECMDGOALS))'
 
 shell: container # Run shell in the Docker container
-	@docker run --rm --mount type=bind,src=${PWD},dst=/app --platform $(PLATFORM) -it $(NAME) /bin/sh
+	@docker run --rm --mount type=bind,src=${PWD},dst=/app --platform $(PLATFORM) -it $(NAME) /usr/bin/bash
 
 test: TARGET := $(filter-out test, $(MAKECMDGOALS))
-test:	# Run tests against the compiled program
-	@echo -e "$(GRN)Running tests for $(TARGET)$(NC)"
-	(LANG=C diff -ys --color <(./ft_nm $(FLAGS) $(TARGET)) <(nm $(FLAGS) $(TARGET)) \
+test: $(NAME)	# Run tests against the compiled program
+	@echo -e "$(MAG)Running tests for $(TARGET)$(NC)"
+	@echo -e "$(CYA)Using flags: $(FLAGS)$(NC)"
+	@(LANG=C diff -ys --color <(./$(NAME) $(FLAGS) $(TARGET)) <(nm $(FLAGS) $(TARGET)) \
 	&& echo -e "$(GRN)Test passed for $(TARGET)$(NC)") \
 	|| echo -e "$(RED)Test failed for $(TARGET)$(NC)"
