@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 01:55:42 by mcutura           #+#    #+#             */
-/*   Updated: 2025/08/10 21:51:03 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/10 13:41:29 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include <stdint.h>
 #include <sys/types.h>
 #include "ft_nm.h"
-#include "ft_printf.h"
 
 Elf64_Sym	*get_symbol_table(t_elf *elf, Elf64_Shdr *shdr)
 {
@@ -39,7 +38,7 @@ static void	set_symbol_flags(t_elf *elf, t_symbol *sym)
 		sym->flags |= SYM_IS_UNDEF;
 	if (sym->type == 'T' || sym->type == 'D' || sym->type == 'R' || \
 		sym->type == 'B' || sym->type == 'G' || sym->type == 'U' || \
-        sym->type == 'W' || sym->type == 'w')
+	sym->type == 'W' || sym->type == 'w')
 		sym->flags |= SYM_IS_EXT;
 	shdr = get_section(elf, sym->entry->st_shndx, &sec_size);
 	if (!shdr)
@@ -48,11 +47,12 @@ static void	set_symbol_flags(t_elf *elf, t_symbol *sym)
 		sym->flags |= SYM_IS_RDONLY;
 }
 
-static t_symbol load_symbol(t_elf *elf, Elf64_Sym *symtab, char *strtab, size_t strtablen)
+static t_symbol	load_symbol(t_elf *elf, Elf64_Sym *symtab, char *strtab, \
+	size_t strtablen)
 {
-    t_symbol    symbol;
+	t_symbol	symbol;
 
-    symbol.entry = symtab;
+	symbol.entry = symtab;
 	symbol.value = symtab->st_value;
 	symbol.type = (uint8_t)(get_symbol_type(elf, symtab) & 0xFF);
 	symbol.name = NULL;
@@ -61,25 +61,16 @@ static t_symbol load_symbol(t_elf *elf, Elf64_Sym *symtab, char *strtab, size_t 
 	else if (symtab->st_name < strtablen && strtab[symtab->st_name] != '\0')
 		symbol.name = &strtab[symtab->st_name];
 	set_symbol_flags(elf, &symbol);
-	if (DEBUG)
-	{
-		ft_printf("Symbol: value = %016x, type = %c, ", symbol.value, symbol.type);
-		if (symbol.name)
-		    ft_printf("name = %s [%u]\n", symbol.name, symtab->st_name);
-		ft_printf("  Entry: st_name = %u, st_value = %016x, st_size = %u, st_info = %02x, st_other = %02x, st_shndx = %u\n",
-			symtab->st_name, symtab->st_value, symtab->st_size,
-			symtab->st_info, symtab->st_other, symtab->st_shndx);
-	}
 	return (symbol);
 }
 
 static size_t	load_symbols(t_elf *elf, Elf64_Shdr *shdr, t_symbol *symbols)
 {
-	Elf64_Sym *const    symtab = get_symbol_table(elf, shdr);
-	size_t			    i;
-	size_t			    symcount;
-	char			    *strtab;
-	size_t			    strtablen;
+	Elf64_Sym *const	symtab = get_symbol_table(elf, shdr);
+	size_t				i;
+	size_t				symcount;
+	char				*strtab;
+	size_t				strtablen;
 
 	if (!symtab)
 		return (0);
@@ -97,7 +88,8 @@ static size_t	load_symbols(t_elf *elf, Elf64_Shdr *shdr, t_symbol *symbols)
 	return (i);
 }
 
-size_t	load_all_symbols(t_elf *elf, t_section *sections, t_symbol *symtab, t_symbol *dynsym)
+size_t	load_all_symbols(t_elf *elf, t_section *sections, t_symbol *symtab, \
+	t_symbol *dynsym)
 {
 	size_t	loaded;
 	size_t	i;

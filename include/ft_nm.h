@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 14:14:27 by mcutura           #+#    #+#             */
-/*   Updated: 2025/08/10 21:50:16 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/10 13:42:30 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,8 +88,8 @@ typedef struct s_symbol
 	Elf64_Sym const	*entry;
 	char			*name;
 	size_t			value;
-	uint8_t     	type;
-	uint8_t     	flags;
+	uint8_t			type;
+	uint8_t			flags;
 }	t_symbol;
 
 struct	s_symbol_count
@@ -111,11 +111,11 @@ char		*get_string_table(t_elf *elf, size_t offset, size_t size, \
 				size_t *len);
 void		*get_section(t_elf *elf, size_t idx, size_t *len);
 uint32_t	get_section_type(t_elf *elf, size_t idx);
-uint64_t    get_section_flags(t_elf *elf, size_t idx);
+uint64_t	get_section_flags(t_elf *elf, size_t idx);
 char		*get_section_name(t_elf *elf, size_t idx);
 size_t		load_all_symbols(t_elf *elf, t_section *sections, \
 			t_symbol *symtab, t_symbol *dynsym);
-int         get_symbol_type(t_elf *elf, Elf64_Sym const *sym);
+int			get_symbol_type(t_elf *elf, Elf64_Sym const *sym);
 void		print_symbols(t_symbol *symtab, t_symbol *dynsym, \
 			struct s_symbol_count *count, uint32_t opts);
 

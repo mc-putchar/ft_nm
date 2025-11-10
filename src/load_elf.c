@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 19:38:04 by mcutura           #+#    #+#             */
-/*   Updated: 2025/08/10 21:50:36 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/10 13:42:03 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,13 +31,6 @@ void	*seek_elf(t_elf *elf, size_t off, size_t len)
 		return (NULL);
 	}
 	return ((char *)elf->u_dat.addr + off);
-}
-
-int	validate_header32(Elf32_Ehdr *ehdr)
-{
-	if (ehdr->e_type == ET_NONE)
-		return (ft_dprintf(STDERR_FILENO, ERR_ELF_TYPE, ehdr->e_type), -1);
-	return (0);
 }
 
 int	validate_header64(Elf64_Ehdr *ehdr)

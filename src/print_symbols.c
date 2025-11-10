@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 09:30:21 by mcutura           #+#    #+#             */
-/*   Updated: 2025/08/10 17:16:43 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/10 13:42:13 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,8 @@ static void	sort_symbols(t_symbol *symtab, \
 		{
 			diff = (symtab[j].name == NULL) - (symtab[i].name == NULL);
 			if (symtab[i].name && symtab[j].name)
-				diff = ft_strncmp(symtab[i].name, symtab[j].name, ft_strlen(symtab[i].name) + 1);
+				diff = ft_strncmp(symtab[i].name, \
+				symtab[j].name, ft_strlen(symtab[i].name) + 1);
 			if ((diff > 0 && !(opts & OPT_REVERSE)) \
 			|| (diff < 0 && opts & OPT_REVERSE))
 				swap_syms(&symtab[i], &symtab[j]);
@@ -65,16 +66,16 @@ static void	sort_symbols(t_symbol *symtab, \
 	}
 }
 
-static void print_symbol(t_symbol *symbol, uint32_t opts)
+static void	print_symbol(t_symbol *symbol, uint32_t opts)
 {
 	if (symbol->flags & SYM_IS_UNDEF)
-	    ft_printf("% 18c", symbol->type);
+		ft_printf("% 18c", symbol->type);
 	else if (opts & OPT_UNDEFINED)
 		return ;
 	else
 		ft_printf("%016x %c", symbol->value, symbol->type);
 	if (symbol->name)
-    	ft_printf(" %s\n", symbol->name);
+		ft_printf(" %s\n", symbol->name);
 	else
 		ft_printf(" \n");
 }
@@ -97,7 +98,7 @@ void	print_symbols(t_symbol *symtab, t_symbol *dynsym, \
 		&& (!(opts & OPT_EXTERNALS) || symtab[i].flags & SYM_IS_EXT))
 		{
 			if (symtab[i].name || symtab[i].value || symtab[i].type != 'U')
-                print_symbol(&symtab[i], opts);
+				print_symbol(&symtab[i], opts);
 		}
 		++i;
 	}

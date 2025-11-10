@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/14 15:22:28 by mcutura           #+#    #+#             */
-/*   Updated: 2025/07/06 22:49:35 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/10 13:41:12 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define LIBFT_LST_H
 
 # include <stddef.h>
+
 typedef struct s_list
 {
 	void			*content;
