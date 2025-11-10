@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 19:55:22 by mcutura           #+#    #+#             */
-/*   Updated: 2025/08/10 19:55:44 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/10 16:24:07 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,26 @@ static inline int	cleanup(t_elf *elf, t_section *sections, t_symbol *symtab, \
 	return (0);
 }
 
+int	prep_sections(t_elf *elf, t_section **sections, struct s_symbol_count *sym_count)
+{
+	uint16_t	shnum;
+
+	if (elf->is64)
+		shnum = load_uint16(elf->u_dat.ehdr->e_shnum * sizeof(t_section), \
+					elf->swap);
+	else
+		shnum = load_uint16(elf->u_dat.ehdr32->e_shnum * sizeof(t_section), \
+					elf->swap);
+	*sections = malloc(shnum * sizeof(t_section));
+	if (!*sections && !cleanup(elf, NULL, NULL, NULL))
+		return (throw_error(-1, ERR_MALLOC));
+	if (elf->is64)
+		read_section_headers(elf, *sections, sym_count);
+	else
+		read_section_headers32(elf, *sections, sym_count);
+	return (0);
+}
+
 int	names(char *file, uint32_t opts)
 {
 	t_elf					elf;
@@ -36,12 +56,9 @@ int	names(char *file, uint32_t opts)
 
 	elf = (t_elf){0};
 	sym_count = (struct s_symbol_count){0};
-	if (load_file(file, &elf, opts))
+	if (load_file(file, &elf, opts) \
+	|| prep_sections(&elf, &sections, &sym_count))
 		return (-1);
-	sections = malloc(elf.u_dat.ehdr->e_shnum * sizeof(t_section));
-	if (!sections && !cleanup(&elf, NULL, NULL, NULL))
-		return (throw_error(-1, ERR_MALLOC));
-	read_section_headers(&elf, sections, &sym_count);
 	symtab = malloc(sym_count.symtab * sizeof(t_symbol));
 	if (!symtab && !cleanup(&elf, sections, NULL, NULL))
 		return (throw_error(-1, ERR_MALLOC));

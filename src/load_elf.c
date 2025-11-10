@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 19:38:04 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/10 13:42:03 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/10 15:14:28 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,29 +33,39 @@ void	*seek_elf(t_elf *elf, size_t off, size_t len)
 	return ((char *)elf->u_dat.addr + off);
 }
 
-int	validate_header64(Elf64_Ehdr *ehdr)
+static int	validate_type(t_elf *elf)
 {
-	if (ehdr->e_type == ET_NONE)
-		return (ft_dprintf(STDERR_FILENO, ERR_ELF_TYPE, ehdr->e_type), -1);
-	return (0);
+	uint16_t	e_type;
+
+	if (elf->is64)
+		e_type = load_uint16(elf->u_dat.ehdr->e_type, elf->swap);
+	else
+		e_type = load_uint16(elf->u_dat.ehdr32->e_type, elf->swap);
+	if (e_type != ET_NONE)
+		return (0);
+	return (ft_dprintf(STDERR_FILENO, ERR_ELF_TYPE, e_type), -1);
 }
 
-int	validate_header(t_elf *elf)
+static int	validate_header(t_elf *elf)
 {
 	if (ft_memcmp(elf->u_dat.ehdr->e_ident, ELFMAG, SELFMAG))
 		return (throw_error(-1, ERR_ELF_HEADER));
-	if (elf->u_dat.ehdr->e_ident[EI_DATA] == EV_NONE)
+	if (elf->u_dat.ehdr->e_ident[EI_DATA] == ELFDATANONE)
 		return (throw_error(-1, ERR_BAD_ELF));
+	elf->swap = 0;
+	if (elf->u_dat.ehdr->e_ident[EI_DATA] == ELFDATA2LSB)
+		elf->swap = !is_lsb();
+	else if (elf->u_dat.ehdr->e_ident[EI_DATA] == ELFDATA2MSB)
+		elf->swap = is_lsb();
 	if (elf->u_dat.ehdr->e_ident[EI_VERSION] != EV_CURRENT)
 		return (throw_error(-1, ERR_BAD_ELF));
-	if (elf->u_dat.ehdr->e_ident[EI_CLASS] == ELFCLASS32)
-		return (throw_error(-1, ERR_NOT_IMPL));
-	else if (elf->u_dat.ehdr->e_ident[EI_CLASS] == ELFCLASS64)
-		return (validate_header64(elf->u_dat.ehdr));
-	return (throw_error(-1, ERR_BAD_ELF));
+	if (elf->u_dat.ehdr->e_ident[EI_CLASS] == ELFCLASSNONE)
+		return (throw_error(-1, ERR_BAD_ELF));
+	elf->is64 = (elf->u_dat.ehdr->e_ident[EI_CLASS] == ELFCLASS64);
+	return (validate_type(elf));
 }
 
-int	load_file_to_mem(t_elf *elf, int fd)
+static int	load_file_to_mem(t_elf *elf, int fd)
 {
 	if (!elf || elf->size < sizeof(Elf64_Ehdr))
 		return (throw_error(-1, ERR_BAD_ELF));

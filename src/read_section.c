@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 17:38:55 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/10 13:41:37 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/10 16:14:12 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,18 +17,40 @@
 void	*get_section(t_elf *elf, size_t idx, size_t *len)
 {
 	Elf64_Ehdr const	*ehdr = elf->u_dat.ehdr;
+	uint16_t const		shnum = load_uint16(ehdr->e_shnum, elf->swap);
 	Elf64_Shdr			*shdr;
 	void				*section;
-	size_t				offset;
+	Elf64_Off			offset;
 
-	if (idx >= ehdr->e_shnum)
+	if (idx >= shnum)
 		return (NULL);
-	offset = ehdr->e_shoff + idx * ehdr->e_shentsize;
-	shdr = seek_elf(elf, offset, ehdr->e_shentsize);
+	shdr = get_section_header(elf, idx);
 	if (!shdr)
 		return (NULL);
-	*len = shdr->sh_size;
-	section = seek_elf(elf, shdr->sh_offset, *len);
+	*len = load_uint64(shdr->sh_size, elf->swap);
+	offset = load_uint64(shdr->sh_offset, elf->swap);
+	section = seek_elf(elf, offset, *len);
+	if (!section)
+		return (NULL);
+	return (section);
+}
+
+void	*get_section32(t_elf *elf, size_t idx, size_t *len)
+{
+	Elf32_Ehdr const	*ehdr = elf->u_dat.ehdr32;
+	uint16_t const		shnum = load_uint16(ehdr->e_shnum, elf->swap);
+	Elf32_Shdr			*shdr;
+	void				*section;
+	Elf32_Off			offset;
+
+	if (idx >= shnum)
+		return (NULL);
+	shdr = get_section_header32(elf, idx);
+	if (!shdr)
+		return (NULL);
+	*len = load_uint32(shdr->sh_size, elf->swap);
+	offset = load_uint32(shdr->sh_offset, elf->swap);
+	section = seek_elf(elf, offset, *len);
 	if (!section)
 		return (NULL);
 	return (section);

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_symbol_type.c                                  :+:      :+:    :+:   */
+/*   get_symbol_type32.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/31 21:31:09 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/10 17:07:26 by mcutura          ###   ########.fr       */
+/*   Created: 2025/11/10 17:09:21 by mcutura           #+#    #+#             */
+/*   Updated: 2025/11/10 17:16:32 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,12 @@
 #include "ft_nm.h"
 #include "libft_str.h"
 
-static int	get_well_known(Elf64_Sym const *sym, int is_local, int bind, \
+static int	get_well_known(Elf32_Sym const *sym, int is_local, int bind, \
 	int swap)
 {
-	Elf64_Addr const	value = load_uint64(sym->st_value, swap);
+	Elf32_Addr const	value = load_uint32(sym->st_value, swap);
 	uint16_t const		shndx = load_uint16(sym->st_shndx, swap);
-	int const			info = ELF64_ST_TYPE(sym->st_info);
+	int const			info = ELF32_ST_TYPE(sym->st_info);
 
 	if (bind == STB_WEAK)
 	{
@@ -60,12 +60,12 @@ static int	try_guess_type_from_name(char *const sec_name, int is_local)
 	return ('?');
 }
 
-static int	get_symbol_info(t_elf *elf, Elf64_Sym const *sym, int is_local)
+static int	get_symbol_info(t_elf *elf, Elf32_Sym const *sym, int is_local)
 {
 	uint16_t const	shndx = load_uint16(sym->st_shndx, elf->swap);
-	uint64_t const	flags = get_section_flags(elf, shndx);
-	uint32_t const	type = get_section_type(elf, shndx);
-	char *const		sec_name = get_section_name(elf, shndx);
+	uint32_t const	flags = get_section_flags32(elf, shndx);
+	uint32_t const	type = get_section_type32(elf, shndx);
+	char *const		sec_name = get_section_name32(elf, shndx);
 
 	if (type == SHT_NOBITS && (flags & SHF_WRITE))
 		return ('B' + is_local);
@@ -80,10 +80,10 @@ static int	get_symbol_info(t_elf *elf, Elf64_Sym const *sym, int is_local)
 	return (try_guess_type_from_name(sec_name, is_local));
 }
 
-int	get_symbol_type(t_elf *elf, Elf64_Sym const *sym)
+int	get_symbol_type32(t_elf *elf, Elf32_Sym const *sym)
 {
-	int const	bind = ELF64_ST_BIND(sym->st_info);
-	int const	is_local = (ELF64_ST_BIND(sym->st_info) == STB_LOCAL) * 32;
+	int const	bind = ELF32_ST_BIND(sym->st_info);
+	int const	is_local = (ELF32_ST_BIND(sym->st_info) == STB_LOCAL) * 32;
 	int			type;
 
 	type = get_well_known(sym, is_local, bind, elf->swap);

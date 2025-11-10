@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 09:30:21 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/10 13:42:13 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/10 16:23:34 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,17 +21,17 @@ static void	swap_syms(t_symbol *a, t_symbol *b)
 {
 	t_symbol	tmp;
 
-	tmp.entry = a->entry;
+	tmp.u_entry = a->u_entry;
 	tmp.value = a->value;
 	tmp.type = a->type;
 	tmp.name = a->name;
 	tmp.flags = a->flags;
-	a->entry = b->entry;
+	a->u_entry = b->u_entry;
 	a->value = b->value;
 	a->type = b->type;
 	a->name = b->name;
 	a->flags = b->flags;
-	b->entry = tmp.entry;
+	b->u_entry = tmp.u_entry;
 	b->value = tmp.value;
 	b->type = tmp.type;
 	b->name = tmp.name;

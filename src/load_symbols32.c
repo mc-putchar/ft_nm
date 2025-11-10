@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   load_symbols.c                                     :+:      :+:    :+:   */
+/*   load_symbols32.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/07 01:55:42 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/10 17:16:08 by mcutura          ###   ########.fr       */
+/*   Created: 2025/11/10 17:16:46 by mcutura           #+#    #+#             */
+/*   Updated: 2025/11/10 17:16:57 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,13 @@
 #include <sys/types.h>
 #include "ft_nm.h"
 
-Elf64_Sym	*get_symbol_table(t_elf *elf, Elf64_Shdr *shdr)
+Elf32_Sym	*get_symbol_table32(t_elf *elf, Elf32_Shdr *shdr)
 {
-	Elf64_Off const	offset = load_uint64(shdr->sh_offset, elf->swap);
-	uint64_t const	size = load_uint64(shdr->sh_size, elf->swap);
-	Elf64_Sym		*symtab;
+	Elf32_Off const	offset = load_uint32(shdr->sh_offset, elf->swap);
+	uint32_t const	size = load_uint32(shdr->sh_size, elf->swap);
+	Elf32_Sym		*symtab;
 
-	symtab = (Elf64_Sym *)seek_elf(elf, offset, size);
+	symtab = (Elf32_Sym *)seek_elf(elf, offset, size);
 	if (!symtab)
 		return (NULL);
 	return (symtab);
@@ -31,8 +31,8 @@ Elf64_Sym	*get_symbol_table(t_elf *elf, Elf64_Shdr *shdr)
 static void	set_symbol_flags(t_elf *elf, t_symbol *sym)
 {
 	size_t				sec_size;
-	Elf64_Shdr const*	shdr = get_section(elf, \
-		load_uint16(sym->u_entry.e64->st_shndx, elf->swap), &sec_size);
+	Elf32_Shdr const*	shdr = get_section32(elf, \
+		load_uint16(sym->u_entry.e32->st_shndx, elf->swap), &sec_size);
 
 	sym->flags = 0;
 	if (sym->type == 'N' || sym->type == 'I' || sym->type == 'a')
@@ -45,32 +45,32 @@ static void	set_symbol_flags(t_elf *elf, t_symbol *sym)
 		sym->flags |= SYM_IS_EXT;
 	if (!shdr)
 		return ;
-	if (!(load_uint64(shdr->sh_flags, elf->swap) & SHF_WRITE))
+	if (!(load_uint32(shdr->sh_flags, elf->swap) & SHF_WRITE))
 		sym->flags |= SYM_IS_RDONLY;
 }
 
-static t_symbol	load_symbol(t_elf *elf, Elf64_Sym *symtab, char *strtab, \
+static t_symbol	load_symbol(t_elf *elf, Elf32_Sym *symtab, char *strtab, \
 	size_t strtablen)
 {
 	t_symbol		symbol;
 	uint32_t const	name = load_uint32(symtab->st_name, elf->swap);
 	uint16_t const	shndx = load_uint16(symtab->st_shndx, elf->swap);
 
-	symbol.u_entry.e64 = symtab;
-	symbol.value = load_uint64(symtab->st_value, elf->swap);
-	symbol.type = (uint8_t)(get_symbol_type(elf, symtab) & 0xFF);
+	symbol.u_entry.e32 = symtab;
+	symbol.value = load_uint32(symtab->st_value, elf->swap);
+	symbol.type = (uint8_t)(get_symbol_type32(elf, symtab) & 0xFF);
 	symbol.name = NULL;
-	if (ELF64_ST_TYPE(symtab->st_info) == STT_SECTION)
-		symbol.name = get_section_name(elf, shndx);
+	if (ELF32_ST_TYPE(symtab->st_info) == STT_SECTION)
+		symbol.name = get_section_name32(elf, shndx);
 	else if (name < strtablen && strtab[name] != '\0')
 		symbol.name = &strtab[name];
 	set_symbol_flags(elf, &symbol);
 	return (symbol);
 }
 
-static size_t	load_symbols(t_elf *elf, Elf64_Shdr *shdr, t_symbol *symbols)
+static size_t	load_symbols(t_elf *elf, Elf32_Shdr *shdr, t_symbol *symbols)
 {
-	Elf64_Sym *const	symtab = get_symbol_table(elf, shdr);
+	Elf32_Sym *const	symtab = get_symbol_table32(elf, shdr);
 	size_t				i;
 	size_t				symcount;
 	char				*strtab;
@@ -79,9 +79,9 @@ static size_t	load_symbols(t_elf *elf, Elf64_Shdr *shdr, t_symbol *symbols)
 	if (!symtab)
 		return (0);
 	strtablen = 0;
-	strtab = (char *)get_section(elf, load_uint32(shdr->sh_link, elf->swap), \
+	strtab = (char *)get_section32(elf, load_uint32(shdr->sh_link, elf->swap), \
 								&strtablen);
-	symcount = load_uint64(shdr->sh_size, elf->swap) / sizeof(Elf64_Sym);
+	symcount = load_uint32(shdr->sh_size, elf->swap) / sizeof(Elf32_Sym);
 	if (!symcount)
 		return (0);
 	i = 0;
@@ -93,7 +93,7 @@ static size_t	load_symbols(t_elf *elf, Elf64_Shdr *shdr, t_symbol *symbols)
 	return (i);
 }
 
-size_t	load_all_symbols(t_elf *elf, t_section *sections, t_symbol *symtab, \
+size_t	load_all_symbols32(t_elf *elf, t_section *sections, t_symbol *symtab, \
 	t_symbol *dynsym)
 {
 	size_t		loaded;
@@ -102,15 +102,13 @@ size_t	load_all_symbols(t_elf *elf, t_section *sections, t_symbol *symtab, \
 
 	loaded = 0;
 	i = 0;
-	if (!elf->is64)
-		return (load_all_symbols32(elf, sections, symtab, dynsym));
-	shnum = load_uint16(elf->u_dat.ehdr->e_shnum, elf->swap);
+	shnum = load_uint16(elf->u_dat.ehdr32->e_shnum, elf->swap);
 	while (i < shnum)
 	{
 		if (sections[i].type == SHT_SYMTAB)
-			loaded += load_symbols(elf, sections[i].u_shdr.e64, symtab);
+			loaded += load_symbols(elf, sections[i].u_shdr.e32, symtab);
 		else if (sections[i].type == SHT_DYNSYM)
-			loaded += load_symbols(elf, sections[i].u_shdr.e64, dynsym);
+			loaded += load_symbols(elf, sections[i].u_shdr.e32, dynsym);
 		++i;
 	}
 	return (loaded);

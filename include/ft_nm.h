@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 14:14:27 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/10 13:42:30 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/10 17:10:05 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@
 # define ERR_FILE_OPEN	"Error: Cannot open file '%s'\n"
 # define ERR_MMAP		"Error: Failed mapping file to memory\n"
 # define ERR_ELF_HEADER	"Error: Not a valid ELF file\n"
-# define ERR_ELF_TYPE	"Error: Unsupported ELF type: %d\n"
+#define ERR_ELF_TYPE	"Error: Unsupported ELF type: %d\n"
 # define ERR_BAD_ELF	"Error: Bad ELF file\n"
 # define ERR_OOB		"Error: Offset %#x is out of bounds for file size %#x\n"
 # define ERR_NOT_IMPL	"Error: Feature not implemented\n"
@@ -72,11 +72,17 @@ typedef struct s_elf
 		Elf64_Ehdr	*ehdr;
 		Elf32_Ehdr	*ehdr32;
 	}			u_dat;
+	int			swap;
+	int			is64;
 }	t_elf;
 
 typedef struct s_section
 {
-	Elf64_Shdr	*shdr;
+	union
+	{
+		Elf64_Shdr	*e64;
+		Elf32_Shdr	*e32;
+	}			u_shdr;
 	char		*name;
 	void		*data;
 	size_t		size;
@@ -85,7 +91,11 @@ typedef struct s_section
 
 typedef struct s_symbol
 {
-	Elf64_Sym const	*entry;
+	union
+	{
+		Elf64_Sym const	*e64;
+		Elf32_Sym const	*e32;
+	}				u_entry;
 	char			*name;
 	size_t			value;
 	uint8_t			type;
@@ -101,21 +111,36 @@ struct	s_symbol_count
 typedef size_t	(*t_symbol_loader)(t_elf *elf, void *shdr, t_symbol *symbols);
 
 int			parse_input(int ac, char **av, t_input *input);
+int			is_lsb(void);
+uint16_t	load_uint16(uint16_t val, int swap);
+uint32_t	load_uint32(uint32_t val, int swap);
+uint64_t	load_uint64(uint64_t val, int swap);
 int			names(char *file, uint32_t opts);
 int			load_file(char *file, t_elf *elf, uint32_t opts);
 void		*seek_elf(t_elf *elf, size_t off, size_t len);
+Elf64_Shdr	*get_section_header(t_elf *elf, size_t idx);
+Elf32_Shdr	*get_section_header32(t_elf *elf, size_t idx);
 void		read_section_headers(t_elf *elf, t_section *sections, \
+			struct s_symbol_count *symcount);
+void		read_section_headers32(t_elf *elf, t_section *sections, \
 			struct s_symbol_count *symcount);
 char const	*get_section_type_str(uint32_t type);
 char		*get_string_table(t_elf *elf, size_t offset, size_t size, \
 				size_t *len);
 void		*get_section(t_elf *elf, size_t idx, size_t *len);
+void		*get_section32(t_elf *elf, size_t idx, size_t *len);
 uint32_t	get_section_type(t_elf *elf, size_t idx);
+uint32_t	get_section_type32(t_elf *elf, uint32_t idx);
 uint64_t	get_section_flags(t_elf *elf, size_t idx);
+uint32_t	get_section_flags32(t_elf *elf, uint32_t idx);
 char		*get_section_name(t_elf *elf, size_t idx);
+char		*get_section_name32(t_elf *elf, size_t idx);
 size_t		load_all_symbols(t_elf *elf, t_section *sections, \
 			t_symbol *symtab, t_symbol *dynsym);
+size_t		load_all_symbols32(t_elf *elf, t_section *sections, \
+			t_symbol *symtab, t_symbol *dynsym);
 int			get_symbol_type(t_elf *elf, Elf64_Sym const *sym);
+int			get_symbol_type32(t_elf *elf, Elf32_Sym const *sym);
 void		print_symbols(t_symbol *symtab, t_symbol *dynsym, \
 			struct s_symbol_count *count, uint32_t opts);
 

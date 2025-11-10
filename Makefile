@@ -10,11 +10,15 @@ vpath %.c $(SRCDIR)
 SRC += main.c
 SRC += options.c
 SRC += names.c
+SRC += endianness.c
 SRC += load_elf.c
 SRC += read_section.c
 SRC += read_sheader.c
+SRC += read_sheader32.c
 SRC += load_symbols.c
+SRC += load_symbols32.c
 SRC += get_symbol_type.c
+SRC += get_symbol_type32.c
 SRC += print_symbols.c
 SRC += print_strings.c
 
