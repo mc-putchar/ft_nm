@@ -15,7 +15,6 @@
 #include <sys/stat.h>
 #include "ft_nm.h"
 #include "ft_printf.h"
-#include "libft.h"
 #include "libft_str.h"
 
 static void	swap_syms(t_symbol *a, t_symbol *b)
@@ -39,34 +38,6 @@ static void	swap_syms(t_symbol *a, t_symbol *b)
 	b->flags = tmp.flags;
 }
 
-static int	alphacmp(char const *sym1, char const *sym2)
-{
-	int		c1;
-	int		c2;
-
-	while (*sym1 && *sym2)
-	{
-		while (!ft_isalnum(*sym1))
-			++sym1;
-		while (!ft_isalnum(*sym2))
-			++sym2;
-		if (!*sym1 || !*sym2)
-			return (*sym1 - *sym2);
-		c1 = ft_tolower((unsigned char)*sym1);
-		c2 = ft_tolower((unsigned char)*sym2);
-		if (c1 != c2)
-			return (c1 - c2);
-		++sym1;
-		++sym2;
-	}
-	if (!*sym1)
-		return (-1);
-	if (!*sym2)
-		return (1);
-	return (0);
-}
-
-// TODO: fix reverse sorting bugs
 static void	sort_symbols(t_symbol *symtab, \
 	struct s_symbol_count *count, uint32_t opts)
 {
@@ -84,16 +55,7 @@ static void	sort_symbols(t_symbol *symtab, \
 		{
 			diff = (symtab[j].name == NULL) - (symtab[i].name == NULL);
 			if (symtab[i].name && symtab[j].name)
-			{
-			    // TODO: Sorting depends on locale settings,
-				// test and figure out which sorting strategy to use
-				diff = alphacmp(symtab[i].name, symtab[j].name);
-				diff = ft_strncmp(symtab[i].name, symtab[j].name, ft_strlen(symtab[i].name));
-				// if (!diff)
-				/* diff = ft_strncasecmp(symtab[i].name, symtab[j].name, \
-						ft_strlen(symtab[i].name));
-						*/
-			}
+				diff = ft_strncmp(symtab[i].name, symtab[j].name, ft_strlen(symtab[i].name) + 1);
 			if ((diff > 0 && !(opts & OPT_REVERSE)) \
 			|| (diff < 0 && opts & OPT_REVERSE))
 				swap_syms(&symtab[i], &symtab[j]);

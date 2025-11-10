@@ -47,7 +47,7 @@ MKDIR := mkdir -p
 RM := rm -f
 
 PLATFORM := linux/amd64
-SHELL := /usr/bin/bash
+SHELL := /bin/bash
 
 RED := \033[31m
 GRN := \033[32m
@@ -119,6 +119,6 @@ test: TARGET := $(filter-out test, $(MAKECMDGOALS))
 test: $(NAME)	# Run tests against the compiled program
 	@echo -e "$(MAG)Running tests for $(TARGET)$(NC)"
 	@echo -e "$(CYA)Using flags: $(FLAGS)$(NC)"
-	@(LANG=C diff -ys --color <(./$(NAME) $(FLAGS) $(TARGET)) <(nm $(FLAGS) $(TARGET)) \
+	@(export LC_COLLATE=C && diff -ys --color <(./$(NAME) $(FLAGS) $(TARGET)) <(nm $(FLAGS) $(TARGET)) \
 	&& echo -e "$(GRN)Test passed for $(TARGET)$(NC)") \
 	|| echo -e "$(RED)Test failed for $(TARGET)$(NC)"
