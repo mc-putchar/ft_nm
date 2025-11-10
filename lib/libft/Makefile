@@ -6,7 +6,7 @@
 #    By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/02 12:21:15 by mcutura           #+#    #+#              #
-#    Updated: 2025/07/13 16:32:15 by mcutura          ###   ########.fr        #
+#    Updated: 2025/11/10 13:45:36 by mcutura          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,6 @@ NAME := libft.a
 SRCDIR := src
 BINDIR := build
 INCDIR := include
-TESTDIR := tests
 
 IDN := $(addprefix $(BINDIR)/, ft_isalnum.o ft_isalpha.o ft_isascii.o \
 	ft_isdigit.o ft_isprint.o ft_isnumber.o)
@@ -61,7 +60,7 @@ ARFLAGS := src
 MKDIR := mkdir -p
 RM := rm -f
 
-.PHONY: all clean fclean re debug test
+.PHONY: all clean fclean re debug
 .DEFAULT_GOAL := all
 
 all: $(NAME)
@@ -95,13 +94,9 @@ clean:
 
 fclean: clean
 	$(RM) $(NAME)
-	$(MAKE) -C $(TESTDIR) fclean
 
 re: fclean
 	$(MAKE) all
 
 debug:
 	DEBUG=1 $(MAKE) re
-
-test: $(NAME)
-	$(MAKE) -C $(TESTDIR) test
