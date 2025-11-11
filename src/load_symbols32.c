@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 17:16:46 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/11 18:37:32 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/11 19:07:30 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include "ft_nm.h"
-#include "ft_printf.h"
 
 Elf32_Sym	*get_symbol_table32(t_elf *elf, Elf32_Shdr *shdr)
 {

@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 15:58:05 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/11 17:54:47 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/11 19:09:29 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ char	*get_section_name32(t_elf *elf, size_t idx)
 	if (!shdr)
 		return (NULL);
 	shstrtab_size = 0;
-	shstrndx = load_uint16(elf->u_dat.ehdr->e_shstrndx, elf->swap);
+	shstrndx = load_uint16(elf->u_dat.ehdr32->e_shstrndx, elf->swap);
 	shstrtab = (char *)get_section32(elf, shstrndx, &shstrtab_size);
 	if (!shstrtab)
 		return (ft_dprintf(STDERR_FILENO, \
