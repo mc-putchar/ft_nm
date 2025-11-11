@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 01:55:42 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/11 19:34:41 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/11 19:51:38 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,8 @@ static void	set_symbol_flags(t_elf *elf, t_symbol *sym)
 		load_uint16(sym->u_entry.e64->st_shndx, elf->swap), &sec_size);
 
 	sym->flags = 0;
-	if (sym->type == 'N' || sym->type == 'I' || sym->type == 'a')
+	if (sym->type == 'N' || sym->type == 'I' || sym->type == 'a' || \
+		ELF64_ST_TYPE(sym->u_entry.e64->st_info) == STT_SECTION)
 		sym->flags |= SYM_IS_DBG;
 	if (sym->type == 'U' || sym->type == 'w' || sym->type == 'v')
 		sym->flags |= SYM_IS_UNDEF;
