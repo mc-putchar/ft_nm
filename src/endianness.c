@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 14:02:29 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/10 15:04:00 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/11 19:32:47 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ uint16_t	load_uint16(uint16_t val, int swap)
 {
 	if (!swap)
 		return (val);
-	return ((val >> 8) & 0xFF) | ((val << 8) & 0xFF00);
+	return (((val >> 8) & 0xFF) | ((val << 8) & 0xFF00));
 }
 
 uint32_t	load_uint32(uint32_t val, int swap)

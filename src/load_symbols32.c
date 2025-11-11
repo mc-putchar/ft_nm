@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 17:16:46 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/11 19:07:30 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/11 19:35:09 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ Elf32_Sym	*get_symbol_table32(t_elf *elf, Elf32_Shdr *shdr)
 static void	set_symbol_flags(t_elf *elf, t_symbol *sym)
 {
 	uint32_t			sec_size;
-	Elf32_Shdr const*	shdr = get_section32(elf, \
+	Elf32_Shdr *const	shdr = get_section32(elf, \
 		load_uint16(sym->u_entry.e32->st_shndx, elf->swap), &sec_size);
 
 	sym->flags = 0;

@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 19:55:22 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/11 18:10:40 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/11 19:35:46 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ static inline int	cleanup(t_elf *elf, t_section *sections, t_symbol *symtab, \
 	return (0);
 }
 
-int	prep_sections(t_elf *elf, t_section **sections, struct s_symbol_count *sym_count)
+int	prep_sections(t_elf *elf, t_section **sections, \
+	struct s_symbol_count *sym_count)
 {
 	uint16_t	shnum;
 
@@ -67,6 +68,8 @@ int	names(char *file, uint32_t opts)
 	if (!dynsym && !cleanup(&elf, sections, symtab, NULL))
 		return (throw_error(-1, ERR_MALLOC));
 	(void)load_all_symbols(&elf, sections, symtab, dynsym);
+	if (!elf.is64)
+		opts |= OPT_32BIT;
 	print_symbols(symtab, dynsym, &sym_count, opts);
 	return (cleanup(&elf, sections, symtab, dynsym));
 }

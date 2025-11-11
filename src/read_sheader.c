@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 19:41:22 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/10 16:06:18 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/11 19:36:26 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,8 +81,10 @@ void	read_section_headers(t_elf *elf, t_section *sections, \
 		if (!sections[i].u_shdr.e64 && ++i)
 			continue ;
 		sections[i].name = get_section_name(elf, i);
-		sections[i].size = load_uint64(sections[i].u_shdr.e64->sh_size, elf->swap);
-		sections[i].type = load_uint32(sections[i].u_shdr.e64->sh_type, elf->swap);
+		sections[i].size = load_uint64(sections[i].u_shdr.e64->sh_size, \
+							elf->swap);
+		sections[i].type = load_uint32(sections[i].u_shdr.e64->sh_type, \
+							elf->swap);
 		if (sections[i].type == SHT_SYMTAB)
 			symcount->symtab += sections[i].size / sizeof(Elf64_Sym);
 		if (sections[i].type == SHT_DYNSYM)

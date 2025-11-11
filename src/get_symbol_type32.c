@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 17:09:21 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/10 17:16:32 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/11 19:12:05 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ static int	get_symbol_info(t_elf *elf, Elf32_Sym const *sym, int is_local)
 	uint32_t const	type = get_section_type32(elf, shndx);
 	char *const		sec_name = get_section_name32(elf, shndx);
 
+	if (!(flags & SHF_ALLOC))
+		return ('N' + is_local);
 	if (type == SHT_NOBITS && (flags & SHF_WRITE))
 		return ('B' + is_local);
 	else if (flags & SHF_EXECINSTR)

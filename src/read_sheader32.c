@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 15:58:05 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/11 19:09:29 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/11 19:36:56 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,13 +81,16 @@ void	read_section_headers32(t_elf *elf, t_section *sections, \
 		if (!sections[i].u_shdr.e32 && ++i)
 			continue ;
 		sections[i].name = get_section_name32(elf, i);
-		sections[i].size = load_uint32(sections[i].u_shdr.e32->sh_size, elf->swap);
-		sections[i].type = load_uint32(sections[i].u_shdr.e32->sh_type, elf->swap);
+		sections[i].size = load_uint32(sections[i].u_shdr.e32->sh_size, \
+							elf->swap);
+		sections[i].type = load_uint32(sections[i].u_shdr.e32->sh_type, \
+							elf->swap);
 		if (sections[i].type == SHT_SYMTAB)
 			symcount->symtab += sections[i].size / sizeof(Elf32_Sym);
 		if (sections[i].type == SHT_DYNSYM)
 			symcount->dynsym += sections[i].size / sizeof(Elf32_Sym);
-		sections[i].data = get_section32(elf, i, (uint32_t*)(&sections[i].size));
+		sections[i].data = get_section32(elf, i, \
+							(uint32_t *)(&sections[i].size));
 		++i;
 	}
 }

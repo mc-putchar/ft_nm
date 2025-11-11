@@ -6,13 +6,14 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 09:30:21 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/10 16:23:34 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/11 19:30:10 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stddef.h>
 #include <stdint.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "ft_nm.h"
 #include "ft_printf.h"
 #include "libft_str.h"
@@ -69,11 +70,21 @@ static void	sort_symbols(t_symbol *symtab, \
 static void	print_symbol(t_symbol *symbol, uint32_t opts)
 {
 	if (symbol->flags & SYM_IS_UNDEF)
-		ft_printf("% 18c", symbol->type);
+	{
+		if (opts & OPT_32BIT)
+			ft_printf("%9c", symbol->type);
+		else
+			ft_printf("%18c", symbol->type);
+	}
 	else if (opts & OPT_UNDEFINED)
 		return ;
 	else
-		ft_printf("%016x %c", symbol->value, symbol->type);
+	{
+		if (opts & OPT_32BIT)
+			ft_printf("%08x %c", symbol->value, symbol->type);
+		else
+			ft_printf("%016x %c", symbol->value, symbol->type);
+	}
 	if (symbol->name)
 		ft_printf(" %s\n", symbol->name);
 	else

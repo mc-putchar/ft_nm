@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 14:14:27 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/11 18:05:48 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/11 19:13:45 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@
 # define OPT_NO_SORT	0x10
 # define OPT_HELP		0x20
 # define OPT_FILENAME	0x40
+# define OPT_32BIT		0x80
 
 # define SYM_IS_DBG		0x01
 # define SYM_IS_EXT		0x02
