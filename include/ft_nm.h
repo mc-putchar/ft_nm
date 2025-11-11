@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 14:14:27 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/10 17:10:05 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/11 18:05:48 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@
 # define ERR_FILE_OPEN	"Error: Cannot open file '%s'\n"
 # define ERR_MMAP		"Error: Failed mapping file to memory\n"
 # define ERR_ELF_HEADER	"Error: Not a valid ELF file\n"
-#define ERR_ELF_TYPE	"Error: Unsupported ELF type: %d\n"
+# define ERR_ELF_TYPE	"Error: Unsupported ELF type: %d\n"
 # define ERR_BAD_ELF	"Error: Bad ELF file\n"
 # define ERR_OOB		"Error: Offset %#x is out of bounds for file size %#x\n"
 # define ERR_NOT_IMPL	"Error: Feature not implemented\n"
@@ -128,7 +128,7 @@ char const	*get_section_type_str(uint32_t type);
 char		*get_string_table(t_elf *elf, size_t offset, size_t size, \
 				size_t *len);
 void		*get_section(t_elf *elf, size_t idx, size_t *len);
-void		*get_section32(t_elf *elf, size_t idx, size_t *len);
+void		*get_section32(t_elf *elf, uint32_t idx, uint32_t *len);
 uint32_t	get_section_type(t_elf *elf, size_t idx);
 uint32_t	get_section_type32(t_elf *elf, uint32_t idx);
 uint64_t	get_section_flags(t_elf *elf, size_t idx);

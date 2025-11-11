@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 01:55:42 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/10 17:16:08 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/11 16:53:40 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,10 +100,10 @@ size_t	load_all_symbols(t_elf *elf, t_section *sections, t_symbol *symtab, \
 	size_t		i;
 	uint16_t	shnum;
 
-	loaded = 0;
-	i = 0;
 	if (!elf->is64)
 		return (load_all_symbols32(elf, sections, symtab, dynsym));
+	loaded = 0;
+	i = 0;
 	shnum = load_uint16(elf->u_dat.ehdr->e_shnum, elf->swap);
 	while (i < shnum)
 	{

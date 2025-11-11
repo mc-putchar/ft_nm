@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include <stdint.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include "ft_nm.h"
 #include "ft_printf.h"
@@ -32,10 +33,11 @@ int	main(int ac, char **av)
 	size_t	done;
 	t_input	input;
 
+	input.files = NULL;
 	if (parse_input(ac, av, &input))
 		return (1);
 	if (input.opts & OPT_HELP)
-		return (ft_printf(USAGE, av[0]), 0);
+		return (free(input.files), ft_printf(USAGE, av[0]), 0);
 	if (!input.file_count && names(DEFAULT_TARGET, input.opts))
 		return (1);
 	err = 0;
@@ -48,5 +50,6 @@ int	main(int ac, char **av)
 			++err;
 		++done;
 	}
+	free(input.files);
 	return (err);
 }

@@ -6,12 +6,13 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 19:55:22 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/10 16:24:07 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/11 18:10:40 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <sys/mman.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "ft_nm.h"
 #include "ft_printf.h"
 

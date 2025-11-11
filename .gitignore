@@ -10,4 +10,5 @@ a.out
 .vscode/
 .zed/
 build/
+binary/
 compile_commands.json

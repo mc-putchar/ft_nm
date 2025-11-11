@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 17:16:46 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/10 17:16:57 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/11 18:37:32 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <sys/types.h>
+#include <unistd.h>
 #include "ft_nm.h"
+#include "ft_printf.h"
 
 Elf32_Sym	*get_symbol_table32(t_elf *elf, Elf32_Shdr *shdr)
 {
@@ -30,7 +32,7 @@ Elf32_Sym	*get_symbol_table32(t_elf *elf, Elf32_Shdr *shdr)
 
 static void	set_symbol_flags(t_elf *elf, t_symbol *sym)
 {
-	size_t				sec_size;
+	uint32_t			sec_size;
 	Elf32_Shdr const*	shdr = get_section32(elf, \
 		load_uint16(sym->u_entry.e32->st_shndx, elf->swap), &sec_size);
 
@@ -62,7 +64,7 @@ static t_symbol	load_symbol(t_elf *elf, Elf32_Sym *symtab, char *strtab, \
 	symbol.name = NULL;
 	if (ELF32_ST_TYPE(symtab->st_info) == STT_SECTION)
 		symbol.name = get_section_name32(elf, shndx);
-	else if (name < strtablen && strtab[name] != '\0')
+	else if (strtab && name && name < strtablen && strtab[name] != '\0')
 		symbol.name = &strtab[name];
 	set_symbol_flags(elf, &symbol);
 	return (symbol);
@@ -71,10 +73,10 @@ static t_symbol	load_symbol(t_elf *elf, Elf32_Sym *symtab, char *strtab, \
 static size_t	load_symbols(t_elf *elf, Elf32_Shdr *shdr, t_symbol *symbols)
 {
 	Elf32_Sym *const	symtab = get_symbol_table32(elf, shdr);
-	size_t				i;
-	size_t				symcount;
 	char				*strtab;
-	size_t				strtablen;
+	uint32_t			i;
+	uint32_t			symcount;
+	uint32_t			strtablen;
 
 	if (!symtab)
 		return (0);
