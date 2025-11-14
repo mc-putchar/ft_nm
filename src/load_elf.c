@@ -51,16 +51,21 @@ static int	validate_header(t_elf *elf)
 	if (ft_memcmp(elf->u_dat.ehdr->e_ident, ELFMAG, SELFMAG))
 		return (throw_error(-1, ERR_ELF_HEADER));
 	if (elf->u_dat.ehdr->e_ident[EI_DATA] == ELFDATANONE)
-		return (throw_error(-1, ERR_BAD_ELF));
+	{
+		ft_dprintf(STDERR_FILENO, ERR_BAD_ELF, elf->filename);
+		return (-1);
+	}
 	elf->swap = 0;
 	if (elf->u_dat.ehdr->e_ident[EI_DATA] == ELFDATA2LSB)
 		elf->swap = !is_lsb();
 	else if (elf->u_dat.ehdr->e_ident[EI_DATA] == ELFDATA2MSB)
 		elf->swap = is_lsb();
-	if (elf->u_dat.ehdr->e_ident[EI_VERSION] != EV_CURRENT)
-		return (throw_error(-1, ERR_BAD_ELF));
-	if (elf->u_dat.ehdr->e_ident[EI_CLASS] == ELFCLASSNONE)
-		return (throw_error(-1, ERR_BAD_ELF));
+	if (elf->u_dat.ehdr->e_ident[EI_VERSION] != EV_CURRENT \
+	|| elf->u_dat.ehdr->e_ident[EI_CLASS] == ELFCLASSNONE)
+	{
+		ft_dprintf(STDERR_FILENO, ERR_BAD_ELF, elf->filename);
+		return (-1);
+	}
 	elf->is64 = (elf->u_dat.ehdr->e_ident[EI_CLASS] == ELFCLASS64);
 	return (validate_type(elf));
 }
@@ -68,19 +73,23 @@ static int	validate_header(t_elf *elf)
 static int	load_file_to_mem(t_elf *elf, int fd)
 {
 	if (!elf || elf->size < sizeof(Elf64_Ehdr))
-		return (throw_error(-1, ERR_BAD_ELF));
+	{
+		ft_dprintf(STDERR_FILENO, ERR_BAD_ELF, elf->filename);
+		return (-1);
+	}
 	elf->u_dat.addr = mmap(NULL, elf->size, PROT_READ, MAP_PRIVATE, fd, 0);
 	if (elf->u_dat.addr == MAP_FAILED)
 		return (throw_error(-1, ERR_MMAP));
 	if (validate_header(elf))
 	{
 		munmap(elf->u_dat.addr, elf->size);
-		return (throw_error(-1, ERR_BAD_ELF));
+		ft_dprintf(STDERR_FILENO, ERR_BAD_ELF, elf->filename);
+		return (-1);
 	}
 	return (0);
 }
 
-int	load_file(char *file, t_elf *elf, uint32_t opts)
+int	load_file(char const *file, t_elf *elf, uint32_t opts)
 {
 	int const	fd = open(file, O_RDONLY);
 	struct stat	statbuf;
@@ -88,7 +97,7 @@ int	load_file(char *file, t_elf *elf, uint32_t opts)
 	if (fd < 0)
 		return (ft_dprintf(STDERR_FILENO, ERR_FILE_OPEN, file), -1);
 	statbuf = (struct stat){0};
-	elf->filename = file;
+	elf->filename = (char *)file;
 	if (fstat(fd, &statbuf))
 		return (close(fd), throw_error(-1, ERR_FSTAT));
 	elf->size = (size_t)statbuf.st_size;

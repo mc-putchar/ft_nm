@@ -31,6 +31,7 @@ int	prep_sections(t_elf *elf, t_section **sections, \
 	struct s_symbol_count *sym_count)
 {
 	uint16_t	shnum;
+	int			result;
 
 	if (elf->is64)
 		shnum = load_uint16(elf->u_dat.ehdr->e_shnum * sizeof(t_section), \
@@ -42,34 +43,41 @@ int	prep_sections(t_elf *elf, t_section **sections, \
 	if (!*sections && !cleanup(elf, NULL, NULL, NULL))
 		return (throw_error(-1, ERR_MALLOC));
 	if (elf->is64)
-		read_section_headers(elf, *sections, sym_count);
+		result = read_section_headers(elf, *sections, sym_count);
 	else
-		read_section_headers32(elf, *sections, sym_count);
+		result = read_section_headers32(elf, *sections, sym_count);
+	if (result)
+	{
+		ft_dprintf(STDERR_FILENO, ERR_BAD_ELF, elf->filename);
+		return (-1);
+	}
 	return (0);
 }
 
-int	names(char *file, uint32_t opts)
+int	names(char const *file, uint32_t opts)
 {
-	t_elf					elf;
-	t_section				*sections;
-	t_symbol				*symtab;
-	t_symbol				*dynsym;
-	struct s_symbol_count	sym_count;
+	t_elf		elf;
+	t_section	*sections;
+	t_symbols	symbols;
 
 	elf = (t_elf){0};
-	sym_count = (struct s_symbol_count){0};
+	symbols.count = (struct s_symbol_count){0};
 	if (load_file(file, &elf, opts) \
-	|| prep_sections(&elf, &sections, &sym_count))
+	|| prep_sections(&elf, &sections, &symbols.count))
 		return (-1);
-	symtab = malloc(sym_count.symtab * sizeof(t_symbol));
-	if (!symtab && !cleanup(&elf, sections, NULL, NULL))
+	symbols.symtab = malloc(symbols.count.symtab * sizeof(t_symbol));
+	if (!symbols.symtab && !cleanup(&elf, sections, NULL, NULL))
 		return (throw_error(-1, ERR_MALLOC));
-	dynsym = malloc(sym_count.dynsym * sizeof(t_symbol));
-	if (!dynsym && !cleanup(&elf, sections, symtab, NULL))
+	symbols.dynsym = malloc(symbols.count.dynsym * sizeof(t_symbol));
+	if (!symbols.dynsym && !cleanup(&elf, sections, symbols.symtab, NULL))
 		return (throw_error(-1, ERR_MALLOC));
-	(void)load_all_symbols(&elf, sections, symtab, dynsym);
+	if (load_all_symbols(&elf, sections, symbols.symtab, symbols.dynsym) < 0)
+	{
+		cleanup(&elf, sections, symbols.symtab, symbols.dynsym);
+		return (ft_dprintf(STDERR_FILENO, ERR_BAD_ELF, file), -1);
+	}
 	if (!elf.is64)
 		opts |= OPT_32BIT;
-	print_symbols(symtab, dynsym, &sym_count, opts);
-	return (cleanup(&elf, sections, symtab, dynsym));
+	print_symbols(file, &symbols, opts);
+	return (cleanup(&elf, sections, symbols.symtab, symbols.dynsym));
 }

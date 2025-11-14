@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 19:41:22 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/11 19:36:26 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/14 23:07:03 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ char	*get_section_name(t_elf *elf, size_t idx)
 	return (shstrtab + load_uint32(shdr->sh_name, elf->swap));
 }
 
-void	read_section_headers(t_elf *elf, t_section *sections, \
+int	read_section_headers(t_elf *elf, t_section *sections, \
 		struct s_symbol_count *symcount)
 {
 	Elf64_Ehdr *const	ehdr = elf->u_dat.ehdr;
@@ -78,8 +78,8 @@ void	read_section_headers(t_elf *elf, t_section *sections, \
 	{
 		sections[i] = (t_section){0};
 		sections[i].u_shdr.e64 = get_section_header(elf, i);
-		if (!sections[i].u_shdr.e64 && ++i)
-			continue ;
+		if (!sections[i].u_shdr.e64)
+			return (-1);
 		sections[i].name = get_section_name(elf, i);
 		sections[i].size = load_uint64(sections[i].u_shdr.e64->sh_size, \
 							elf->swap);
@@ -92,4 +92,5 @@ void	read_section_headers(t_elf *elf, t_section *sections, \
 		sections[i].data = get_section(elf, i, &sections[i].size);
 		++i;
 	}
+	return (0);
 }

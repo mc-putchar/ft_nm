@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 01:55:42 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/11 19:51:38 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/14 23:05:18 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static void	set_symbol_flags(t_elf *elf, t_symbol *sym)
 		sym->flags |= SYM_IS_EXT;
 	if (!shdr)
 		return ;
-	if (!(load_uint64(shdr->sh_flags, elf->swap) & SHF_WRITE))
+	if (!((load_uint64(shdr->sh_flags, elf->swap) & SHF_WRITE)))
 		sym->flags |= SYM_IS_RDONLY;
 }
 
@@ -69,7 +69,7 @@ static t_symbol	load_symbol(t_elf *elf, Elf64_Sym *symtab, char *strtab, \
 	return (symbol);
 }
 
-static size_t	load_symbols(t_elf *elf, Elf64_Shdr *shdr, t_symbol *symbols)
+static int	load_symbols(t_elf *elf, Elf64_Shdr *shdr, t_symbol *symbols)
 {
 	Elf64_Sym *const	symtab = get_symbol_table(elf, shdr);
 	size_t				i;
@@ -78,41 +78,46 @@ static size_t	load_symbols(t_elf *elf, Elf64_Shdr *shdr, t_symbol *symbols)
 	size_t				strtablen;
 
 	if (!symtab)
-		return (0);
+		return (-1);
 	strtablen = 0;
 	strtab = (char *)get_section(elf, load_uint32(shdr->sh_link, elf->swap), \
 								&strtablen);
+	if (!strtab)
+		return (-1);
 	symcount = load_uint64(shdr->sh_size, elf->swap) / sizeof(Elf64_Sym);
 	if (!symcount)
-		return (0);
+		return (-1);
 	i = 0;
 	while (i < symcount)
 	{
 		symbols[i] = load_symbol(elf, &symtab[i], strtab, strtablen);
 		++i;
 	}
-	return (i);
+	return ((int)i);
 }
 
-size_t	load_all_symbols(t_elf *elf, t_section *sections, t_symbol *symtab, \
+int	load_all_symbols(t_elf *elf, t_section *sections, t_symbol *symtab, \
 	t_symbol *dynsym)
 {
-	size_t		loaded;
-	size_t		i;
+	int			loaded;
+	int			result;
+	int			i;
 	uint16_t	shnum;
 
 	if (!elf->is64)
 		return (load_all_symbols32(elf, sections, symtab, dynsym));
 	loaded = 0;
-	i = 0;
+	i = -1;
 	shnum = load_uint16(elf->u_dat.ehdr->e_shnum, elf->swap);
-	while (i < shnum)
+	while (++i < shnum)
 	{
 		if (sections[i].type == SHT_SYMTAB)
-			loaded += load_symbols(elf, sections[i].u_shdr.e64, symtab);
+			result = load_symbols(elf, sections[i].u_shdr.e64, symtab);
 		else if (sections[i].type == SHT_DYNSYM)
-			loaded += load_symbols(elf, sections[i].u_shdr.e64, dynsym);
-		++i;
+			result = load_symbols(elf, sections[i].u_shdr.e64, dynsym);
+		if (result < 0)
+			return (-1);
+		loaded += result;
 	}
 	return (loaded);
 }

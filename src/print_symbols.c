@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 09:30:21 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/11 19:30:10 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/14 23:06:38 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,19 +40,19 @@ static void	swap_syms(t_symbol *a, t_symbol *b)
 }
 
 static void	sort_symbols(t_symbol *symtab, \
-	struct s_symbol_count *count, uint32_t opts)
+	t_symbol_count count, uint32_t opts)
 {
 	size_t	i;
 	size_t	j;
 	int		diff;
 
-	if ((opts & OPT_NO_SORT) || count->symtab < 2)
+	if ((opts & OPT_NO_SORT) || count.symtab < 2)
 		return ;
 	i = 0;
-	while (i < count->symtab - 1)
+	while (i < count.symtab - 1)
 	{
 		j = i + 1;
-		while (j < count->symtab)
+		while (j < count.symtab)
 		{
 			diff = (symtab[j].name == NULL) - (symtab[i].name == NULL);
 			if (symtab[i].name && symtab[j].name)
@@ -60,6 +60,8 @@ static void	sort_symbols(t_symbol *symtab, \
 				symtab[j].name, ft_strlen(symtab[i].name) + 1);
 			if ((diff > 0 && !(opts & OPT_REVERSE)) \
 			|| (diff < 0 && opts & OPT_REVERSE))
+				swap_syms(&symtab[i], &symtab[j]);
+			if (!diff && symtab[i].value > symtab[j].value)
 				swap_syms(&symtab[i], &symtab[j]);
 			++j;
 		}
@@ -91,27 +93,27 @@ static void	print_symbol(t_symbol *symbol, uint32_t opts)
 		ft_printf(" \n");
 }
 
-void	print_symbols(t_symbol *symtab, t_symbol *dynsym, \
-	struct s_symbol_count *count, uint32_t opts)
+void	print_symbols(char const *file, t_symbols *syms, uint32_t opts)
 {
 	size_t	i;
 
-	if (!count->symtab)
+	if (!syms->count.symtab)
 	{
-		print_error(ERR_NO_SYM);
+		ft_dprintf(STDERR_FILENO, ERR_NO_SYM, file);
 		return ;
 	}
-	sort_symbols(symtab, count, opts);
+	sort_symbols(syms->symtab, syms->count, opts);
 	i = 0;
-	while (i < count->symtab)
+	while (i < syms->count.symtab)
 	{
-		if ((!(symtab[i].flags & SYM_IS_DBG) || (opts & OPT_DBG_SYMS)) \
-		&& (!(opts & OPT_EXTERNALS) || symtab[i].flags & SYM_IS_EXT))
+		if ((!(syms->symtab[i].flags & SYM_IS_DBG) || (opts & OPT_DBG_SYMS)) \
+		&& (!(opts & OPT_EXTERNALS) || syms->symtab[i].flags & SYM_IS_EXT))
 		{
-			if (symtab[i].name || symtab[i].value || symtab[i].type != 'U')
-				print_symbol(&symtab[i], opts);
+			if (syms->symtab[i].name || syms->symtab[i].value \
+			|| syms->symtab[i].type != 'U')
+				print_symbol(&syms->symtab[i], opts);
 		}
 		++i;
 	}
-	(void)dynsym;
+	(void)syms->dynsym;
 }
