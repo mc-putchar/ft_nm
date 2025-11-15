@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 09:30:21 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/14 23:06:38 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/15 02:49:01 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,9 +59,9 @@ static void	sort_symbols(t_symbol *symtab, \
 				diff = ft_strncmp(symtab[i].name, \
 				symtab[j].name, ft_strlen(symtab[i].name) + 1);
 			if ((diff > 0 && !(opts & OPT_REVERSE)) \
-			|| (diff < 0 && opts & OPT_REVERSE))
-				swap_syms(&symtab[i], &symtab[j]);
-			if (!diff && symtab[i].value > symtab[j].value)
+			|| (diff < 0 && opts & OPT_REVERSE) || (!diff && \
+			((symtab[i].value > symtab[j].value && !(opts & OPT_REVERSE)) \
+			|| (symtab[i].value < symtab[j].value && (opts & OPT_REVERSE)))))
 				swap_syms(&symtab[i], &symtab[j]);
 			++j;
 		}
@@ -74,7 +74,7 @@ static void	print_symbol(t_symbol *symbol, uint32_t opts)
 	if (symbol->flags & SYM_IS_UNDEF)
 	{
 		if (opts & OPT_32BIT)
-			ft_printf("%9c", symbol->type);
+			ft_printf("%10c", symbol->type);
 		else
 			ft_printf("%18c", symbol->type);
 	}

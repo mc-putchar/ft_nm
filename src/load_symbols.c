@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 01:55:42 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/14 23:05:18 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/15 02:48:17 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,14 +35,15 @@ static void	set_symbol_flags(t_elf *elf, t_symbol *sym)
 		load_uint16(sym->u_entry.e64->st_shndx, elf->swap), &sec_size);
 
 	sym->flags = 0;
-	if (sym->type == 'N' || sym->type == 'I' || sym->type == 'a' || \
+	if (sym->type == 'N' || sym->type == 'a' || \
 		ELF64_ST_TYPE(sym->u_entry.e64->st_info) == STT_SECTION)
 		sym->flags |= SYM_IS_DBG;
 	if (sym->type == 'U' || sym->type == 'w' || sym->type == 'v')
 		sym->flags |= SYM_IS_UNDEF;
-	if (sym->type == 'T' || sym->type == 'D' || sym->type == 'R' || \
-		sym->type == 'B' || sym->type == 'G' || sym->type == 'U' || \
-	sym->type == 'W' || sym->type == 'w')
+	if (sym->type == 'T' || sym->type == 'D' || sym->type == 'R' \
+	|| sym->type == 'B' || sym->type == 'G' || sym->type == 'U' \
+	|| sym->type == 'V' || sym->type == 'v' || sym->type == 'i' \
+	|| sym->type == 'W' || sym->type == 'w' || sym->type == 'A')
 		sym->flags |= SYM_IS_EXT;
 	if (!shdr)
 		return ;
