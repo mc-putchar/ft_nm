@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 19:38:04 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/11 17:17:55 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/15 02:54:57 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,12 +49,9 @@ static int	validate_type(t_elf *elf)
 static int	validate_header(t_elf *elf)
 {
 	if (ft_memcmp(elf->u_dat.ehdr->e_ident, ELFMAG, SELFMAG))
-		return (throw_error(-1, ERR_ELF_HEADER));
-	if (elf->u_dat.ehdr->e_ident[EI_DATA] == ELFDATANONE)
-	{
-		ft_dprintf(STDERR_FILENO, ERR_BAD_ELF, elf->filename);
 		return (-1);
-	}
+	if (elf->u_dat.ehdr->e_ident[EI_DATA] == ELFDATANONE)
+		return (-1);
 	elf->swap = 0;
 	if (elf->u_dat.ehdr->e_ident[EI_DATA] == ELFDATA2LSB)
 		elf->swap = !is_lsb();
@@ -62,10 +59,7 @@ static int	validate_header(t_elf *elf)
 		elf->swap = is_lsb();
 	if (elf->u_dat.ehdr->e_ident[EI_VERSION] != EV_CURRENT \
 	|| elf->u_dat.ehdr->e_ident[EI_CLASS] == ELFCLASSNONE)
-	{
-		ft_dprintf(STDERR_FILENO, ERR_BAD_ELF, elf->filename);
 		return (-1);
-	}
 	elf->is64 = (elf->u_dat.ehdr->e_ident[EI_CLASS] == ELFCLASS64);
 	return (validate_type(elf));
 }

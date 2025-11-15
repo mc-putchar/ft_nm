@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 19:55:22 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/11 19:35:46 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/15 02:58:04 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,8 @@ int	names(char const *file, uint32_t opts)
 	t_symbols	symbols;
 
 	elf = (t_elf){0};
-	symbols.count = (struct s_symbol_count){0};
+	sections = NULL;
+	symbols = (t_symbols){0};
 	if (load_file(file, &elf, opts) \
 	|| prep_sections(&elf, &sections, &symbols.count))
 		return (-1);
