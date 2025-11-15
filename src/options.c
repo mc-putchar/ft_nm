@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 18:32:26 by mcutura           #+#    #+#             */
-/*   Updated: 2025/08/10 19:41:25 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/15 13:27:33 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,16 @@
 #include "ft_nm.h"
 
 // Possible options:
-// -a: Display debugger-only symbols.
+// -a: Display all symbols, including debugger-only symbols.
+// -D: Display dynamic symbols instead of normal symbols.
 // -g: Display only external symbols.
 // -u: Display only undefined symbols.
-// -r: Reverse the sense of the sort.
+// -r: Reverse the order of the sort.
 // -p: Do not sort the symbols.
 // -h: Display help message.
 static int	parse_arg(char **av, uint32_t *opts, int i)
 {
-	static char const *const	options = "agurph";
+	static char const *const	options = "aDgurph";
 	char						*opt;
 	int							j;
 

@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 09:30:21 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/15 02:49:01 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/15 13:21:27 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,20 +39,19 @@ static void	swap_syms(t_symbol *a, t_symbol *b)
 	b->flags = tmp.flags;
 }
 
-static void	sort_symbols(t_symbol *symtab, \
-	t_symbol_count count, uint32_t opts)
+static void	sort_symbols(t_symbol *symtab, size_t count, uint32_t opts)
 {
 	size_t	i;
 	size_t	j;
 	int		diff;
 
-	if ((opts & OPT_NO_SORT) || count.symtab < 2)
+	if ((opts & OPT_NO_SORT) || count < 2)
 		return ;
 	i = 0;
-	while (i < count.symtab - 1)
+	while (i < count - 1)
 	{
 		j = i + 1;
-		while (j < count.symtab)
+		while (j < count)
 		{
 			diff = (symtab[j].name == NULL) - (symtab[i].name == NULL);
 			if (symtab[i].name && symtab[j].name)
@@ -93,27 +92,29 @@ static void	print_symbol(t_symbol *symbol, uint32_t opts)
 		ft_printf(" \n");
 }
 
-void	print_symbols(char const *file, t_symbols *syms, uint32_t opts)
+void	print_symbols(char const *file, t_symbol *syms, size_t count, \
+	uint32_t opts)
 {
 	size_t	i;
 
-	if (!syms->count.symtab)
+	if (opts & OPT_FILENAME)
+		ft_printf("\n%s:\n", file);
+	if (!count)
 	{
 		ft_dprintf(STDERR_FILENO, ERR_NO_SYM, file);
 		return ;
 	}
-	sort_symbols(syms->symtab, syms->count, opts);
+	sort_symbols(syms, count, opts);
 	i = 0;
-	while (i < syms->count.symtab)
+	while (i < count)
 	{
-		if ((!(syms->symtab[i].flags & SYM_IS_DBG) || (opts & OPT_DBG_SYMS)) \
-		&& (!(opts & OPT_EXTERNALS) || syms->symtab[i].flags & SYM_IS_EXT))
+		if ((!(syms[i].flags & SYM_IS_DBG) || (opts & OPT_DBG_SYMS)) \
+		&& (!(opts & OPT_EXTERNALS) || syms[i].flags & SYM_IS_EXT))
 		{
-			if (syms->symtab[i].name || syms->symtab[i].value \
-			|| syms->symtab[i].type != 'U')
-				print_symbol(&syms->symtab[i], opts);
+			if (syms[i].name || syms[i].value \
+			|| syms[i].type != 'U')
+				print_symbol(&syms[i], opts);
 		}
 		++i;
 	}
-	(void)syms->dynsym;
 }

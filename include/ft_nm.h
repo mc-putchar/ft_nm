@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 14:14:27 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/14 23:04:44 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/15 13:28:02 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,13 +42,14 @@
 %02x %02x %02x %02x %02x %02x %02x\n"
 
 # define OPT_DBG_SYMS	0x01
-# define OPT_EXTERNALS	0x02
-# define OPT_UNDEFINED	0x04
-# define OPT_REVERSE	0x08
-# define OPT_NO_SORT	0x10
-# define OPT_HELP		0x20
-# define OPT_FILENAME	0x40
-# define OPT_32BIT		0x80
+# define OPT_DYNAMIC	0x02
+# define OPT_EXTERNALS	0x04
+# define OPT_UNDEFINED	0x08
+# define OPT_REVERSE	0x10
+# define OPT_NO_SORT	0x20
+# define OPT_HELP		0x40
+# define OPT_FILENAME	0x80
+# define OPT_32BIT		0x100
 
 # define SYM_IS_DBG		0x01
 # define SYM_IS_EXT		0x02
@@ -122,7 +123,7 @@ uint16_t	load_uint16(uint16_t val, int swap);
 uint32_t	load_uint32(uint32_t val, int swap);
 uint64_t	load_uint64(uint64_t val, int swap);
 int			names(char const *file, uint32_t opts);
-int			load_file(char const *file, t_elf *elf, uint32_t opts);
+int			load_file(char const *file, t_elf *elf);
 void		*seek_elf(t_elf *elf, size_t off, size_t len);
 Elf64_Shdr	*get_section_header(t_elf *elf, size_t idx);
 Elf32_Shdr	*get_section_header32(t_elf *elf, size_t idx);
@@ -147,6 +148,6 @@ int			load_all_symbols32(t_elf *elf, t_section *sections, \
 			t_symbol *symtab, t_symbol *dynsym);
 int			get_symbol_type(t_elf *elf, Elf64_Sym const *sym);
 int			get_symbol_type32(t_elf *elf, Elf32_Sym const *sym);
-void		print_symbols(char const *file, t_symbols *syms, uint32_t opts);
-
+void		print_symbols(char const *file, t_symbol *syms, size_t count, \
+			uint32_t opts);
 #endif

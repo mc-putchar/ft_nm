@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 19:38:04 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/15 02:54:57 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/15 13:22:50 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ static int	load_file_to_mem(t_elf *elf, int fd)
 	return (0);
 }
 
-int	load_file(char const *file, t_elf *elf, uint32_t opts)
+int	load_file(char const *file, t_elf *elf)
 {
 	int const	fd = open(file, O_RDONLY);
 	struct stat	statbuf;
@@ -98,7 +98,5 @@ int	load_file(char const *file, t_elf *elf, uint32_t opts)
 	if (load_file_to_mem(elf, fd))
 		return (close(fd), -1);
 	(void)close(fd);
-	if (opts & OPT_FILENAME)
-		ft_printf("\n%s:\n", file);
 	return (0);
 }

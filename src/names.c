@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 19:55:22 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/15 02:58:04 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/15 13:32:09 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,15 +56,13 @@ int	prep_sections(t_elf *elf, t_section **sections, \
 
 int	names(char const *file, uint32_t opts)
 {
-	t_elf		elf;
 	t_section	*sections;
+	t_elf		elf;
 	t_symbols	symbols;
 
 	elf = (t_elf){0};
-	sections = NULL;
 	symbols = (t_symbols){0};
-	if (load_file(file, &elf, opts) \
-	|| prep_sections(&elf, &sections, &symbols.count))
+	if (load_file(file, &elf) || prep_sections(&elf, &sections, &symbols.count))
 		return (-1);
 	symbols.symtab = malloc(symbols.count.symtab * sizeof(t_symbol));
 	if (!symbols.symtab && !cleanup(&elf, sections, NULL, NULL))
@@ -77,8 +75,10 @@ int	names(char const *file, uint32_t opts)
 		cleanup(&elf, sections, symbols.symtab, symbols.dynsym);
 		return (ft_dprintf(STDERR_FILENO, ERR_BAD_ELF, file), -1);
 	}
-	if (!elf.is64)
-		opts |= OPT_32BIT;
-	print_symbols(file, &symbols, opts);
+	opts |= (OPT_32BIT * (!elf.is64));
+	if (opts & OPT_DYNAMIC)
+		print_symbols(file, symbols.dynsym, symbols.count.dynsym, opts);
+	else
+		print_symbols(file, symbols.symtab, symbols.count.symtab, opts);
 	return (cleanup(&elf, sections, symbols.symtab, symbols.dynsym));
 }
