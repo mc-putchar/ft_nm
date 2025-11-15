@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 21:31:09 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/11 19:39:44 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/15 00:01:14 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ static int	get_well_known(Elf64_Sym const *sym, int is_local, int bind, \
 	uint16_t const		shndx = load_uint16(sym->st_shndx, swap);
 	int const			info = ELF64_ST_TYPE(sym->st_info);
 
+	if (info == STT_GNU_IFUNC)
+		return ('i');
 	if (bind == STB_WEAK)
 	{
 		if (info == STT_OBJECT)
@@ -77,8 +79,6 @@ static int	get_symbol_info(t_elf *elf, Elf64_Sym const *sym, int is_local)
 		return ('R' + is_local);
 	else if ((flags & SHF_WRITE) && !(flags & SHF_EXECINSTR))
 		return ('D' + is_local);
-	else if (type == STT_GNU_IFUNC)
-		return ('I' + is_local);
 	return (try_guess_type_from_name(sec_name, is_local));
 }
 
