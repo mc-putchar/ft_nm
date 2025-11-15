@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 14:14:27 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/15 13:28:02 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/15 14:06:56 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,16 +30,12 @@
 # define ERR_UNKOWN_OPT	"ft_nm: unknown option '%c'\n"
 # define ERR_FILE_OPEN	"ft_nm: cannot open file '%s'\n"
 # define ERR_MMAP		"ft_nm: failed mapping file to memory\n"
-# define ERR_ELF_HEADER	"ft_nm: file format not recognized\n"
 # define ERR_ELF_TYPE	"ft_nm: unsupported ELF type: %d\n"
 # define ERR_BAD_ELF	"ft_nm: %s: file format not recognized\n"
 # define ERR_OOB		"ft_nm: offset %#x is out of bounds for file size %#x\n"
 # define ERR_NOT_IMPL	"ft_nm: feature not implemented\n"
 # define ERR_FSTAT		"ft_nm: failed to get file status\n"
 # define ERR_MALLOC		"ft_nm: failed to allocate memory\n"
-
-# define ELF_HEADER_FMT	"  %-8s %02x %02x %02x %02x %02x %02x %02x %02x %02x \
-%02x %02x %02x %02x %02x %02x %02x\n"
 
 # define OPT_DBG_SYMS	0x01
 # define OPT_DYNAMIC	0x02
@@ -150,4 +146,5 @@ int			get_symbol_type(t_elf *elf, Elf64_Sym const *sym);
 int			get_symbol_type32(t_elf *elf, Elf32_Sym const *sym);
 void		print_symbols(char const *file, t_symbol *syms, size_t count, \
 			uint32_t opts);
+
 #endif

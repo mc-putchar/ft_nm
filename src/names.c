@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 19:55:22 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/15 13:32:09 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/15 14:09:56 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ int	prep_sections(t_elf *elf, t_section **sections, \
 	if (result)
 	{
 		ft_dprintf(STDERR_FILENO, ERR_BAD_ELF, elf->filename);
+		cleanup(elf, *sections, NULL, NULL);
 		return (-1);
 	}
 	return (0);
@@ -72,8 +73,8 @@ int	names(char const *file, uint32_t opts)
 		return (throw_error(-1, ERR_MALLOC));
 	if (load_all_symbols(&elf, sections, symbols.symtab, symbols.dynsym) < 0)
 	{
-		cleanup(&elf, sections, symbols.symtab, symbols.dynsym);
-		return (ft_dprintf(STDERR_FILENO, ERR_BAD_ELF, file), -1);
+		ft_dprintf(STDERR_FILENO, ERR_BAD_ELF, file);
+		return (cleanup(&elf, sections, symbols.symtab, symbols.dynsym), -1);
 	}
 	opts |= (OPT_32BIT * (!elf.is64));
 	if (opts & OPT_DYNAMIC)

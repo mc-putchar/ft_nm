@@ -6,7 +6,7 @@
 /*   By: mcutura <mcutura@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 01:55:42 by mcutura           #+#    #+#             */
-/*   Updated: 2025/11/15 02:48:17 by mcutura          ###   ########.fr       */
+/*   Updated: 2025/11/15 14:11:46 by mcutura          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ static t_symbol	load_symbol(t_elf *elf, Elf64_Sym *symtab, char *strtab, \
 	return (symbol);
 }
 
-static int	load_symbols(t_elf *elf, Elf64_Shdr *shdr, t_symbol *symbols)
+static ssize_t	load_symbols(t_elf *elf, Elf64_Shdr *shdr, t_symbol *symbols)
 {
 	Elf64_Sym *const	symtab = get_symbol_table(elf, shdr);
 	size_t				i;
@@ -94,19 +94,20 @@ static int	load_symbols(t_elf *elf, Elf64_Shdr *shdr, t_symbol *symbols)
 		symbols[i] = load_symbol(elf, &symtab[i], strtab, strtablen);
 		++i;
 	}
-	return ((int)i);
+	return ((ssize_t)i);
 }
 
 int	load_all_symbols(t_elf *elf, t_section *sections, t_symbol *symtab, \
 	t_symbol *dynsym)
 {
+	ssize_t		result;
 	int			loaded;
-	int			result;
 	int			i;
 	uint16_t	shnum;
 
 	if (!elf->is64)
 		return (load_all_symbols32(elf, sections, symtab, dynsym));
+	result = 0;
 	loaded = 0;
 	i = -1;
 	shnum = load_uint16(elf->u_dat.ehdr->e_shnum, elf->swap);
