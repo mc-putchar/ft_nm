@@ -45,7 +45,6 @@ ifeq ($(DEBUG), 1)
 	CPPFLAGS += -DDEBUG=1
 	LDFLAGS += -ggdb3 -Og -DDEBUG=1
 endif
-SAMPLE := sample.c
 
 MKDIR := mkdir -p
 RM := rm -f
@@ -61,7 +60,7 @@ CYA := \033[36m
 CYB := \033[1;36m
 NC  := \033[0m
 
-.PHONY: all debug clean fclean re run try help sample container exec shell
+.PHONY: all debug clean fclean re run try help container exec shell
 .DEFAULT_GOAL := all
 
 all: $(NAME) # Compile all targets
@@ -104,11 +103,6 @@ help:	# Show this helpful message
 	printf "$(GRN)$(NAME)$(NC)\n"; \
 	printf "Usage:\n\t$(CYB)make $(MAG)<target>$(NC)\n" } \
 	/^[A-Za-z_0-9-]+:.*?#/ { printf "$(MAB)%-16s $(CYA)%s$(NC)\n", $$1, $$2}' Makefile
-
-example: $(SAMPLE)
-
-$(SAMPLE):
-	$(CC) -ggdb3 sample.c
 
 container: # Build a Docker container for the project
 	@docker build --platform $(PLATFORM) -t $(NAME) .

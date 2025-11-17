@@ -57,7 +57,7 @@ static int	try_guess_type_from_name(char *const sec_name, int is_local)
 		|| !ft_strncmp(sec_name, ".sbss", 5))
 			return ('G' + is_local);
 		if (!ft_strncmp(sec_name, ".debug_", 7))
-			return ('N');
+			return ('N' + is_local);
 	}
 	return ('?');
 }
@@ -73,12 +73,12 @@ static int	get_symbol_info(t_elf *elf, Elf64_Sym const *sym, int is_local)
 		return ('N' + is_local);
 	if (type == SHT_NOBITS && (flags & SHF_WRITE))
 		return ('B' + is_local);
+	else if ((flags & SHF_WRITE) && !(flags & SHF_EXECINSTR))
+		return ('D' + is_local);
 	else if (flags & SHF_EXECINSTR)
 		return ('T' + is_local);
 	else if (!(flags & SHF_WRITE))
 		return ('R' + is_local);
-	else if ((flags & SHF_WRITE) && !(flags & SHF_EXECINSTR))
-		return ('D' + is_local);
 	return (try_guess_type_from_name(sec_name, is_local));
 }
 
