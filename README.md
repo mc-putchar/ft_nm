@@ -32,9 +32,3 @@ List symbols in [file(s)] (a.out by default).
 * `-p`: Do not sort the symbols.  
 * `-h`: Display help message.  
 * `--`: Stop interpreting flags (useful if filename begins with `-`)  
-
----
-
-## Remaining TODOs:
-
-[ ] Testing suite  
